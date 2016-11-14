@@ -1,8 +1,6 @@
 import java.sql.*;
 
 public class SQLHelper {
-
-    
     
     public static void Insert(String table, String[] values) {
 	String columns[] = GetColumnNamesForTable(table);
@@ -18,6 +16,11 @@ public class SQLHelper {
 
 	SQLHelper.ExecuteSQL(sql);	
     }
+    
+    public static void DeleteTable(String tableName) {
+	SQLHelper.ExecuteSQL("DROP TABLE " + tableName);
+    }
+    
 
     private static void ExecuteSQL(String sql) {
 	try {
