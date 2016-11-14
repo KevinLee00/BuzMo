@@ -16,6 +16,10 @@ public class SQLHelper {
 
 	sql += v;
 
+	SQLHelper.ExecuteSQL(sql);	
+    }
+
+    private static void ExecuteSQL(String sql) {
 	try {
 	    Class.forName("oracle.jdbc.driver.OracleDriver");
 	    String url = "jdbc:oracle:thin:@uml.cs.ucsb.edu:1521:xe";
@@ -26,11 +30,9 @@ public class SQLHelper {
 	    st.executeQuery(sql);
 	    con.close();
 	} catch (Exception e) { System.out.println(e); }
-
 	
     }
-
-
+    
     private static String[] GetColumnNamesForTable(String table) {
 	if (table == "Users") {
 	    String columns[] = {"name", "phone_num", "email", "pword", "screen_name"};
