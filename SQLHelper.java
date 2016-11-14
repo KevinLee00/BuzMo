@@ -37,9 +37,14 @@ public class SQLHelper {
     }
     
     private static String[] GetColumnNamesForTable(String table) {
-	if (table == "Users") {
-	    String columns[] = {"name", "phone_num", "email", "pword", "screen_name"};
-	    return columns;
+	if (table == "Users") {	
+	    	String columns[] = {"name", "phone_num", "email", "pword", "screen_name"};
+		return columns;
+	}
+
+	if (table == "Messages") {
+		String columns[] = {"message_id", "text", "timestamp", "sender", "receiver"};
+		return columns;
 	}
 
 	return null;
