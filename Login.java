@@ -15,7 +15,7 @@ public class Login {
 	} else if (answer == 2) {
 	    // create account
 	    String prompts[] = {"Name", "Phone Number", "Email", "Password", "Screen Name"};
-	    Menu.PromptUser( prompts );
+	    SQLHelper.Insert("Users", Menu.PromptUser( prompts ));
 	} else {
 	    System.out.println("Error\n");
 	}
