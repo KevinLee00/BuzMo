@@ -8,15 +8,15 @@ public class TestOracle {
 
                         Class.forName("oracle.jdbc.driver.OracleDriver");
                         String url = "jdbc:oracle:thin:@uml.cs.ucsb.edu:1521:xe";
-			String username = "kevinlee00";
-			String password = "903";
+			String username = "christiandaley";
+			String password = "003";
                         Connection con=DriverManager.getConnection(url,username, password);
                         Statement st = con.createStatement();
                         String sql = "WRITE YOUR QUERY HERE";
                         ResultSet rs = st.executeQuery(sql);
-                        while(rs.next())
+                        //while(rs.next())
 				//MODIFY PRINT TO FIT YOUR QUERY AND ATTRIBUTE TYPES
-                                System.out.println(rs.getInt(1)+" "+rs.getString(2));
+                        //        System.out.println(rs.getInt(1)+" "+rs.getString(2));
                         con.close();
                 }
                 catch(Exception e){System.out.println(e);}
