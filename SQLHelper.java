@@ -42,7 +42,7 @@ public class SQLHelper {
 	}
 
 	if (table == "Messages") {
-		String columns[] = {"message_id", "text", "timestamp", "sender", "receiver"};
+		String columns[] = {"message_id", "text", "timestamp", "sender", "receiver", "message_type"};
 		return columns;
 	}
 
