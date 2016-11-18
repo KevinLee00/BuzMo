@@ -16,4 +16,12 @@ public class User {
 	return email;
     }
 
+    public static String getName() {
+	return name;
+    }
+
+    public static String getScreenName() {
+	return screen_name;
+    }
+
 }
