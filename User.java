@@ -1,11 +1,19 @@
 public class User {
-	private static String email; // Used to login
+    private static String name, phone_num, email, pword, screen_name; // Used to login
+    private static int is_manager;
 
-	public static String getEmail() {
-	    return email;
-	}
+    public static void setInfo(String name, String phone_num, String email, String pword, String screen_name, int is_manager) {
+	User.name = name;
+	User.phone_num = phone_num;
+	User.email = email;
+	User.pword = pword;
+	User.screen_name = screen_name;
+	User.is_manager = is_manager;
 
-	public static void setEmail(String email) {
-	    User.email = email;
-	}
+    }
+    
+    public static String getEmail() {
+	return email;
+    }
+
 }

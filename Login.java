@@ -13,14 +13,21 @@ public class Login {
 	if (answer == 1) {
 	    String prompts[] = {"Email", "Password"};
 	    String answers[] = Menu.PromptUser(prompts);
-	    ResultSet rs = SQLHelper.ExecuteSQL("SELECT email, pword FROM Users");
+	    ResultSet rs = SQLHelper.ExecuteSQL("SELECT * FROM Users");
 	    int success = 0;
+	    String name = null, phone_num = null, email = null, pword = null, screen_name = null;
+	    int manager = 0;
 	    try {
 		while (rs.next()) {
-		    String email = rs.getString(1).trim();
-		    String pword = rs.getString(2).trim();
+		    name = rs.getString(1).trim();
+		    phone_num = rs.getString(2).trim();
+		    email = rs.getString(3).trim();
+		    pword = rs.getString(4).trim();
+		    screen_name = rs.getString(5) == null ? null : rs.getString(5).trim();
+		    manager = rs.getInt(6);
 		    if (email.equals(answers[0]) && pword.equals(answers[1])) {
 			success = 1;
+			
 			break;
 		    }
 		}
@@ -32,7 +39,7 @@ public class Login {
 
 	    if (success == 1) {
 		System.out.println("Successfully logged in!");
-		User.setEmail(answers[0]);
+		User.setInfo(name, phone_num, email, pword, screen_name, manager);
 	    } else {
 		System.out.println("Invalid username/password combo");
 	    }
