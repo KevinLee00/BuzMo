@@ -1,6 +1,8 @@
 import java.sql.*;
 
 public class SQLHelper {
+
+    private static Connection con = null;
     
     public static void Insert(String table, String[] values, String[] types) {
 	String sql = "INSERT INTO " + table + " VALUES (";
@@ -15,24 +17,35 @@ public class SQLHelper {
 	}
 
 	ExecuteSQL(sql);
+	Close();
     }
     
     public static void DeleteTable(String tableName) {
 	SQLHelper.ExecuteSQL("DROP TABLE " + tableName);
+	Close();
     }
 
-    public static void ExecuteSQL(String sql) {
+    public static ResultSet ExecuteSQL(String sql) {
+	ResultSet rs = null;
+		
 	try {
 	    Class.forName("oracle.jdbc.driver.OracleDriver");
 	    String url = "jdbc:oracle:thin:@uml.cs.ucsb.edu:1521:xe";
 	    String username = "christiandaley";
 	    String password = "003";
-	    Connection con=DriverManager.getConnection(url,username, password);
+	    con=DriverManager.getConnection(url,username, password);
 	    Statement st = con.createStatement();
-	    st.executeQuery(sql);
-	    con.close();
+	    rs = st.executeQuery(sql);
 	} catch (Exception e) { System.out.println(e); }
+
+	return rs;
 	
+    }
+
+    public static void Close() {
+	try {
+	    con.close();
+	} catch (Exception e) {System.out.println(e);}
     }
     
     private static String[] GetColumnNamesForTable(String table) {
