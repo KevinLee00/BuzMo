@@ -32,6 +32,7 @@ public class Login {
 
 	    if (success == 1) {
 		System.out.println("Successfully logged in!");
+		User.setEmail(answers[0]);
 	    } else {
 		System.out.println("Invalid username/password combo");
 	    }

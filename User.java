@@ -1,5 +1,5 @@
-public static class User (String[][ args) {
-	private static email; // Used to login
+public class User {
+	private static String email; // Used to login
 
 	public static String getEmail() {
 	    return email;
@@ -7,4 +7,5 @@ public static class User (String[][ args) {
 
 	public static void setEmail(String email) {
 	    User.email = email;
+	}
 }
