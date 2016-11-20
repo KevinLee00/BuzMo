@@ -12,7 +12,8 @@ public class TestOracle {
 			String password = "003";
                         Connection con=DriverManager.getConnection(url,username, password);
                         Statement st = con.createStatement();
-			String sql = "";
+			// String sql = "";
+                        String sql = "CREATE TABLE Messages(message_id INT, text VARCHAR(255), timestamp VARCHAR(255), owner VARCHAR(255), sender VARCHAR(255), receiver VARCHAR(255), message_type INT, PRIMARY KEY(message_id))";
                         ResultSet rs = st.executeQuery(sql);
                         //while(rs.next())
 				//MODIFY PRINT TO FIT YOUR QUERY AND ATTRIBUTE TYPES
