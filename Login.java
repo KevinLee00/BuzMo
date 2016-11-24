@@ -5,9 +5,8 @@ public class Login {
 
     public static void main(String args[]) {
 
-	System.out.println("Welcome to BuzMo\n");
 	String items[] = {"Login", "Create new account"};
-	int answer = Menu.DisplayMenu(items);
+	int answer = Menu.DisplayMenu("Welcome to BuzMo", items);
 
 
 	if (answer == 1) {

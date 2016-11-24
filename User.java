@@ -1,3 +1,5 @@
+import java.sql.*;
+
 public class User {
     private static String name, phone_num, email, pword, screen_name; // Used to login
     private static int is_manager;
@@ -23,5 +25,24 @@ public class User {
     public static String getScreenName() {
 	return screen_name;
     }
+
+
+    public static String NameGivenEmail(String email) {
+	String sql = "SELECT name FROM Users WHERE email = '" + email + "'";
+	ResultSet rs = SQLHelper.ExecuteSQL(sql);
+	String name = null;
+	try {
+	    while (rs.next()) {
+		name = rs.getString(1).trim();
+	    }
+	} catch (Exception e) {System.out.println(e);}
+
+
+	SQLHelper.Close();
+
+	return name;
+
+    }
+    
 
 }
