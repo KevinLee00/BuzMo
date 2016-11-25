@@ -43,6 +43,24 @@ public class User {
 	return name;
 
     }
+
+
+    public static String ScreenNameGivenEmail(String email) {
+	String sql = "SELECT screen_name FROM Users WHERE email = '" + email + "'";
+	ResultSet rs = SQLHelper.ExecuteSQL(sql);
+	String screen_name = null;
+	try {
+	    while (rs.next()) {
+		screen_name = rs.getString(1).trim();
+	    }
+	} catch (Exception e) {System.out.println(e);}
+
+
+	SQLHelper.Close();
+
+	return screen_name;
+
+    }
     
 
 }

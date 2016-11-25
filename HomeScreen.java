@@ -12,7 +12,7 @@ public class HomeScreen {
 	}
 
 	public static void UserOptions() {
-		String prompts[] = {"Send message", "Check messages", "Search for user", "Logout"};
+	    String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Logout"};
 
 		while (true) {
 		
@@ -24,12 +24,14 @@ public class HomeScreen {
 			Messages.ComposeMessage();
 		    }
 
-		    // Check messages
+		    // Check inbox
 		    else if (answer == 2 ) {
-			Messages.CheckMessages();
+			Messages.CheckInbox();
 		    } else if (answer == 3) {
-			Search.Search();
+			Messages.ViewSentMessages();
 		    } else if (answer == 4) {
+			Search.Search();
+		    } else if (answer == 5) {
 			System.out.println("Sucessfully logged out. Goodbye!");
 			System.exit(0);
 		    }

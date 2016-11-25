@@ -4,14 +4,19 @@ public class Menu {
 
     private static Scanner scanner = new Scanner(System.in);
 
+    public static final String YesNo[] = {"Yes", "No"};
+
     public static int DisplayMenu( String title, String[] items) {
 	System.out.println("\n" + title);
 	for (int i = 0; i < items.length; i++) {
 	    System.out.println( (i + 1) + ". " + items[i] );
 	}
+
+	int answer = Integer.parseInt(scanner.nextLine());
+	//System.out.print("\033[H\033[2J");
+	//System.out.flush();
 	
-	
-	return Integer.parseInt(scanner.nextLine());
+	return answer;
     }
 
 
@@ -21,6 +26,9 @@ public class Menu {
 		    System.out.println( "Please enter: " + prompts[i] );
 		    answers[i] = scanner.nextLine();
 		}
+
+		//	System.out.print("\033[H\033[2J");
+		//System.out.flush();
 
 		return answers;
 		
