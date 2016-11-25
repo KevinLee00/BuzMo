@@ -42,8 +42,8 @@ public class User {
 
 	SQLHelper.Close();
 
-	//if (screen_name != null)
-	//  return screen_name;
+	if (screen_name != null)
+	  return screen_name;
 
 	return name;
 

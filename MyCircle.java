@@ -85,7 +85,7 @@ public class MyCircle {
 
     // returns the email addresses of all friends of the specified user
     public static String[] GetFriends(String email) {
-	String sql = "SELECT email FROM Users WHERE email = (SELECT email2 FROM Friends WHERE email1 = '" + email + "')";
+	String sql = "SELECT email2 FROM Friends WHERE email1 = '" + email + "'";
 	ArrayList<String> friends = new ArrayList<String>();
 	ResultSet rs = SQLHelper.ExecuteSQL(sql);
 	
