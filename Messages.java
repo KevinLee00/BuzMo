@@ -22,33 +22,42 @@ public class Messages {
     }
 
     public static void ComposeMessage() {
-	String[] prompts = {"message content"};
-	String text[] = Menu.PromptUser(prompts);
+	String text[] = Menu.PromptUser(Menu.MSG_PROMPT);
 
 	String[] items = {"Private", "MyCirlce", "Chatgroup"};
 	int answer = Menu.DisplayMenu("What kind of message is this?", items);
 
 	// private message
 	if (answer == 1) {
-	    ArrayList<String> friends = MyCircle.GetFriends(User.getEmail());
-	    String temp[] = new String[friends.size()];
-
-	    for (int i = 0; i < temp.length; i++) {
-		temp[i] = User.ScreenNameGivenEmail(friends.get(i));
-		if (temp[i] == null)
-		    temp[i] = User.NameGivenEmail(friends.get(i));
+	    String friends[] = MyCircle.GetFriends(User.getEmail());
+	    String temp[] = new String[friends.length];
+	    
+	    for (int i = 0; i < friends.length; i++) {
+		temp[i] = User.NameGivenEmail(friends[i]);
 	    }
 	    
 	    
 	    answer = Menu.DisplayMenu("Pick a friend to send your message to", temp);
-	    SendPrivateMessage(text[0], friends.get(answer-1));
+	    SendPrivateMessage(text[0], friends[answer-1]);
+	} else if (answer == 2) { // mycircle message
+	    String friends[] = MyCircle.GetFriends(User.getEmail());
+	    String temp[] = new String[friends.length+1];
+
+	    temp[0] = "MyCircle";
+	    for (int i = 0; i < friends.length; i++) {
+		temp[i+1] = User.NameGivenEmail(friends[i]);
+		temp[i+1] += "'s circle";
+	    }
+
+	    answer = Menu.DisplayMenu("Who's circle would you like to post a message to?", temp);
+	    
 	}
 	
     }
 
     public static void CheckInbox() {
 
-	String sql = "SELECT * FROM Messages WHERE receiver = '" + User.getEmail() + "' AND owner = '" + User.getEmail() + "'";
+	String sql = "SELECT * FROM Messages M WHERE (M.type = 0 AND M.receiver = '" + User.getEmail() + "' AND M.owner = '" + User.getEmail() + "')";
 	
 	ArrayList<MSG> messages = new ArrayList<MSG>();
 	
@@ -71,14 +80,14 @@ public class Messages {
 	String names[] = new String[messages.size()];
 	for (int i = 0; i < messages.size(); i++) {
 	    MSG m = messages.get(i);
-	    names[i] = User.ScreenNameGivenEmail(m.sender);
-	    if (names[i] == null)
-		names[i] = User.NameGivenEmail(m.sender);
-
+	    names[i] = User.NameGivenEmail(m.sender);
+	    
 	    names[i] = "From: " + names[i];
 	    
 	    if (m.type == PRIVATE_MSG)
 		names[i] += " [PRIVATE]";
+	    else if (m.type == CIRCLE_MSG)
+		names[i] += " [" + User.NameGivenEmail(m.receiver) + "'s Circle]";
 	}
 
 
@@ -86,7 +95,7 @@ public class Messages {
 	MSG m = messages.get(answer-1);
 	PrintMessage(m);
 	
-	if (m.type == PRIVATE_MSG) {
+	if (m.owner.equals(User.getEmail())) {
 	    answer = Menu.DisplayMenu("Delete message?", Menu.YesNo);
 	    if (answer == 1) {
 		sql = "DELETE FROM Messages WHERE id = " + m.id + " AND owner = '" + m.owner + "'";
@@ -121,10 +130,8 @@ public class Messages {
 
 	for (int i = 0; i < messages.size(); i++) {
 	    MSG m = messages.get(i);
-	    names[i] = User.ScreenNameGivenEmail(m.receiver);
-	    if (names[i] == null)
-		names[i] = User.NameGivenEmail(m.receiver);
-
+	    names[i] = User.NameGivenEmail(m.receiver);
+	   
 	    names[i] = "To: " + names[i];
 
 	    if (m.type == PRIVATE_MSG)
@@ -136,7 +143,7 @@ public class Messages {
 	MSG m = messages.get(answer-1);
 	PrintMessage(m);
 
-	if (m.type == PRIVATE_MSG) {
+	if (m.owner.equals(User.getEmail())) {
 	    answer = Menu.DisplayMenu("Would you like to delete this message?", Menu.YesNo);
 	    if (answer == 1) {
 		sql = "DELETE FROM Messages WHERE id = " + m.id + " AND owner = '" + m.owner + "'";
@@ -182,6 +189,11 @@ public class Messages {
 	SQLHelper.Close();
 	
 	System.out.println("Message sent!");
+	
+    }
+
+    public static void PostMessageToMyCircle(String text, String[] receivers, int is_public) {
+
 	
     }
 

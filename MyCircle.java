@@ -50,13 +50,13 @@ public class MyCircle {
 	String items[] = {"Yes", "No"};
 	System.out.println("You have " + names.size() + " new friend request(s)!");
 	for (int i = 0; i < names.size(); i++) {
-	    int answer = Menu.DisplayMenu("Would you like to add " + names.get(i) + " (" + emails.get(i) + ") as a friend?", items);
+	    int answer = Menu.DisplayMenu("Would you like to add " + names.get(i) + " as a friend?", items);
 	    if (answer == 1) {
 		sql = "INSERT INTO Friends VALUES ('" + User.getEmail() + "', '" + emails.get(i) + "')";
 		SQLHelper.ExecuteSQL(sql);
 		SQLHelper.Close();
 		sql = "INSERT INTO Friends VALUES ('" + emails.get(i) + "', '" + User.getEmail() + "')";
-		//sql = "CREATE TABLE FRIENDS (email1 CHAR(20), email2 CHAR(20), FOREIGN KEY(email1) REFERENCES Users(email), FOREIGN KEY(email2) REFERENCES Users(email), PRIMARY KEY(email1))";
+		//sql = "CREATE TABLE Friends (email1 CHAR(20), email2 CHAR(20), FOREIGN KEY(email1) REFERENCES Users(email), FOREIGN KEY(email2) REFERENCES Users(email), PRIMARY KEY(email1, email2))";
 		SQLHelper.ExecuteSQL(sql);
 		SQLHelper.Close();
 
@@ -84,7 +84,7 @@ public class MyCircle {
 
 
     // returns the email addresses of all friends of the specified user
-    public static ArrayList<String> GetFriends(String email) {
+    public static String[] GetFriends(String email) {
 	String sql = "SELECT email FROM Users WHERE email = (SELECT email2 FROM Friends WHERE email1 = '" + email + "')";
 	ArrayList<String> friends = new ArrayList<String>();
 	ResultSet rs = SQLHelper.ExecuteSQL(sql);
@@ -98,8 +98,15 @@ public class MyCircle {
 	
 	SQLHelper.Close();
 
-	return friends;
+	String temp[] = new String[friends.size()];
+
+	for (int i = 0; i < friends.size(); i++) {
+	    temp[i] = friends.get(i);
+	}
+
+	return temp;
     }
 
+    
 
 }

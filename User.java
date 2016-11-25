@@ -26,39 +26,26 @@ public class User {
 	return screen_name;
     }
 
-
+    
     public static String NameGivenEmail(String email) {
-	String sql = "SELECT name FROM Users WHERE email = '" + email + "'";
+	String sql = "SELECT name, screen_name FROM Users WHERE email = '" + email + "'";
 	ResultSet rs = SQLHelper.ExecuteSQL(sql);
+	String screen_name = null;
 	String name = null;
 	try {
 	    while (rs.next()) {
 		name = rs.getString(1).trim();
+		screen_name = rs.getString(2).trim();
 	    }
 	} catch (Exception e) {System.out.println(e);}
 
 
 	SQLHelper.Close();
+
+	//if (screen_name != null)
+	//  return screen_name;
 
 	return name;
-
-    }
-
-
-    public static String ScreenNameGivenEmail(String email) {
-	String sql = "SELECT screen_name FROM Users WHERE email = '" + email + "'";
-	ResultSet rs = SQLHelper.ExecuteSQL(sql);
-	String screen_name = null;
-	try {
-	    while (rs.next()) {
-		screen_name = rs.getString(1).trim();
-	    }
-	} catch (Exception e) {System.out.println(e);}
-
-
-	SQLHelper.Close();
-
-	return screen_name;
 
     }
     
