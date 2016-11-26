@@ -10,14 +10,14 @@ public class Messages {
 	public String text, id, time, sender, receiver, owner;
 	public int type;
 
-	public MSG(String _id, String _text, String _time, String _sender, String _receiver, String _owner, int _type) {
-	    text = _text;
-	    id = _id;
-	    sender = _sender;
-	    receiver = _receiver;
-	    owner = _owner;
-	    type = _type;
-	    time = _time;
+	public MSG(String id, String text, String time, String sender, String receiver, String owner, int type) {
+	    this.text = text;
+	    this.id = id;
+	    this.sender = sender;
+	    this.receiver = receiver;
+	    this.owner = owner;
+	    this.type = type;
+	    this.time = time;
 	}
     }
 
@@ -40,9 +40,16 @@ public class Messages {
 	    answer = Menu.DisplayMenu("Pick a friend to send your message to", temp);
 	    SendPrivateMessage(text[0], friends[answer-1]);
 	} else if (answer == 2) { // mycircle message
+	    String prompt[] = {"Please provide topic words separated by spaces"};
+	    String twords[] = Menu.PromptUser(prompt)[0].split(" "); 
+
+	    int ispublic = Menu.DisplayMenu("Should this post be public?", Menu.YesNo);
+	    
 	    String friends[] = MyCircle.GetFriends(User.getEmail());
 	    String temp[] = new String[friends.length+1];
 
+	    
+	    
 	    temp[0] = "MyCircle";
 	    for (int i = 0; i < friends.length; i++) {
 		temp[i+1] = User.NameGivenEmail(friends[i]);
@@ -50,6 +57,12 @@ public class Messages {
 	    }
 
 	    answer = Menu.DisplayMenu("Who's circle would you like to post a message to?", temp);
+
+	    if (answer == 1) { // self post
+		
+	    } else {
+		PostMessageToCircle(text[0], friends[answer-2], twords);
+	    }
 	    
 	}
 	
@@ -57,14 +70,14 @@ public class Messages {
 
     public static void CheckInbox() {
 
-	String sql = "SELECT * FROM Messages M WHERE (M.type = 0 AND M.receiver = '" + User.getEmail() + "' AND M.owner = '" + User.getEmail() + "')";
+	String sql = "SELECT * FROM Messages M WHERE (M.type = 0 AND M.id IN (SELECT id from MessageReceivers MR WHERE MR.email = '" + User.getEmail() + "') AND M.owner = '" + User.getEmail() + "')"; 
 	
 	ArrayList<MSG> messages = new ArrayList<MSG>();
 	
 	ResultSet rs = SQLHelper.ExecuteSQL(sql);
 	try {
 	    while (rs.next()) {
-		messages.add(new MSG(rs.getString(1).trim(), rs.getString(2).trim(), rs.getString(3).trim(), rs.getString(4).trim(), rs.getString(5).trim(), rs.getString(6).trim(), rs.getInt(7)));
+		messages.add(new MSG(rs.getString(1).trim(), rs.getString(2).trim(), rs.getString(3).trim(), rs.getString(4).trim(), User.getEmail(), rs.getString(5).trim(), rs.getInt(6)));
 	    }
 	} catch (Exception e) {System.out.println(e);}
 
@@ -114,7 +127,7 @@ public class Messages {
 
 	try {
 	    while (rs.next()) {
-		messages.add(new MSG(rs.getString(1).trim(), rs.getString(2).trim(), rs.getString(3).trim(), rs.getString(4).trim(), rs.getString(5).trim(), rs.getString(6).trim(), rs.getInt(7)));
+		
 	    }
 	} catch (Exception e) {System.out.println(e);}
 
@@ -156,35 +169,33 @@ public class Messages {
     }
     
     public static void SendPrivateMessage(String text, String receiver) {
-        // message_id, text, timestamp, sender, receiver, owner, message_type
+        // message_id, text, timestamp, sender, owner, message_type
+	String sql;
+	/*sql = "DROP TABLE Messages";
+	SQLHelper.ExecuteSQL(sql);
+	SQLHelper.Close();
 	
-	/*String sql = "CREATE TABLE Messages(id INTEGER NOT NULL, text CHAR(1400) NOT NULL, timestamp TIMESTAMP NOT NULL, sender CHAR(20), receiver CHAR(20), owner CHAR(20), type INTEGER NOT NULL, FOREIGN KEY(sender) REFERENCES Users(email), FOREIGN KEY(receiver) REFERENCES Users(email), FOREIGN KEY(owner) REFERENCES Users(email), PRIMARY KEY(id, owner))";
+	sql = "CREATE TABLE Messages(id INTEGER NOT NULL, text CHAR(1400) NOT NULL, timestamp TIMESTAMP NOT NULL, sender CHAR(20), owner CHAR(20), type INTEGER NOT NULL, FOREIGN KEY(sender) REFERENCES Users(email), FOREIGN KEY(owner) REFERENCES Users(email), PRIMARY KEY(id, owner))";
 
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
 	*/
 	
 
-	String sql = "SELECT Max(id) FROM Messages";
-	ResultSet rs = SQLHelper.ExecuteSQL(sql);
-	int id = 0; // the id will be the max of the current ids plus 1"
-	try {
-	    while (rs.next()) {
-		id = rs.getInt(1) + 1;
-	    }
-	} catch (Exception e) {System.out.println(e);}
+	int id = GetUniqueMessageID();
 	
-	SQLHelper.Close();
-
-
 	Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
 
-	sql = "INSERT INTO Messages VALUES (" + id + ", '" + text + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + receiver + "', '" + User.getEmail() + "', " + PRIVATE_MSG + ")";
+	sql = "INSERT INTO Messages VALUES (" + id + ", '" + text + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', " + PRIVATE_MSG + ")";
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
 
 
-	sql =  "INSERT INTO Messages VALUES (" + id + ", '" + text + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + receiver + "', '" + receiver + "', " + PRIVATE_MSG + ")";
+	sql =  "INSERT INTO Messages VALUES (" + id + ", '" + text + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + receiver + "', " + PRIVATE_MSG + ")";
+	SQLHelper.ExecuteSQL(sql);
+	SQLHelper.Close();
+
+	sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + receiver + "')";
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
 	
@@ -193,9 +204,36 @@ public class Messages {
     }
 
     public static void PostMessageToMyCircle(String text, String[] receivers, int is_public) {
-
+	
 	
     }
+
+    public static void PostMessageToCircle(String text, String receiver, String[] twords) {
+	int id = GetUniqueMessageID();
+
+	Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
+
+	String friends[] = MyCircle.GetFriends(receiver);
+	
+		
+    }
+
+    private static int GetUniqueMessageID() {
+	String sql = "SELECT Max(id) FROM Messages";
+        ResultSet rs = SQLHelper.ExecuteSQL(sql);
+        int id = 0; // the id will be the max of the current ids plus 1"
+	    try {
+		while (rs.next()) {
+		    id = rs.getInt(1) + 1;
+		}
+	    } catch (Exception e) {System.out.println(e);}
+
+	SQLHelper.Close();
+
+	return id;
+	
+    }
+
 
     public static void PrintMessage(MSG m) {
 	System.out.println("------------Displaying Message------------\nMessage ID: " + m.id + "\nTimestamp: " + m.time + "\n\n" + m.text + "\n---------------------------------------------\n");

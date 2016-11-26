@@ -34,8 +34,8 @@ public class User {
 	String name = null;
 	try {
 	    while (rs.next()) {
-		name = rs.getString(1).trim();
-		screen_name = rs.getString(2).trim();
+		name = rs.getString(1);
+		screen_name = rs.getString(2);
 	    }
 	} catch (Exception e) {System.out.println(e);}
 
@@ -43,9 +43,9 @@ public class User {
 	SQLHelper.Close();
 
 	if (screen_name != null)
-	  return screen_name;
+	    return screen_name.trim();
 
-	return name;
+	return name.trim();
 
     }
     
