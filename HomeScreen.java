@@ -35,7 +35,7 @@ public class HomeScreen {
 			} else if (answer == 5) {
 			ChatGroups.CreateChatGroup();
 		    } else if (answer == 6) {
-		    	// VIEW CHAT GROUP MESSAGES
+		    ChatGroups.ViewChatGroupMessages();
 		    } else if (answer == 7) {
 		    ChatGroups.ManageCurrentChatGroups();
 			} else if (answer == 8) {

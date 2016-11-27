@@ -24,6 +24,13 @@ import java.sql.*;
 // 				PRIMARY KEY(group_id, member), 
 // 				FOREIGN KEY(group_id) REFERENCES ChatGroups(group_id), 
 // 				FOREIGN KEY(member) REFERENCES Users(email))";
+// "CREATE TABLE ChatGroupMessages ( 
+//				message_id INT, 				
+//				owner CHAR(20),
+//				group_id INT,
+//				PRIMARY KEY(message_id, owner, group_id),
+//				FOREIGN KEY (message_id, owner) REFERENCES Messages,
+//				FOREIGN KEY (group_id) REFERENCES ChatGroups)"
 
 
 
@@ -210,8 +217,33 @@ public class ChatGroups {
     }
 
     public static void ViewChatGroupMessages() {
-    	ArrayList<String> chatGroups = getGroups(User.getEmail());
-    	int answer = Menu.DisplayMenu("Which chat group's messages do you want to view?", chatGroups);
+    	ArrayList<String> listOfGroups = getGroups(User.getEmail());
+    	ArrayList<String> messages = new ArrayList<String>();
+    	String arrayOfGroups[] = listOfGroups.toArray(new String[0]);
+    	int answer = Menu.DisplayMenu("Which chat group do you want to view?", arrayOfGroups);
+    	String groupName = listOfGroups.get(answer-1);
+    	String groupId = GroupIdGivenName(groupName);
+
+    	String sql = "SELECT M.text, M.timestamp, M.sender FROM Messages M, ChatGroupMessages G WHERE G.group_id = '" + groupId + "' AND M.id = G.message_id";
+    	ResultSet rs = SQLHelper.ExecuteSQL(sql);
+    	try {
+    		while(rs.next()) {
+    			messages.add("'" + rs.getString(1).trim() + "' at " + rs.getString(2).trim() + " from " + rs.getString(3).trim());
+    		}
+    	}
+    	catch(Exception e) { 
+    		System.out.println(e); 
+    	}
     	
+    	SQLHelper.Close();
+
+    	if (messages.isEmpty()) {
+    		System.out.println("There are no messages in this group chat (yet).");
+    	}
+    	else {
+    		for (int i = 0; i<messages.size(); i++) {
+    			System.out.println(messages.get(i));
+    		}
+    	}
     }
 }

@@ -80,15 +80,36 @@ public class Messages {
     }
 
     public static void SendChatGroupMessage(String text, String chatGroup) {
+		// First find the members of the chat group
+		// ArrayList<String> members = new ArrayList<String>();
+		// String sql = "SELECT M.member FROM ChatGroups G, ChatGroupMembers M WHERE G.group_id = M.group_id AND G.name = '" + chatGroup + "'";
+		// ResultSet rs = SQLHelper.ExecuteSQL(sql);
+		// try {
+		// 	members.add(rs.getString(1));
+		// }
+		// catch(Exception e) { 
+		// 	System.out.println(e); 
+		// }
+		// SQLHelper.Close();
+
+		// Add the message to the Messages table
 		int messageId = GetUniqueMessageID();
 		Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
 		int type = CHATGRP_MSG;
 		String sql = "INSERT INTO Messages VALUES('" + messageId + "', '" + text  + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', '" + type + "')";
-		// System.out.println(sql);		
+		System.out.println(sql);
 		SQLHelper.ExecuteSQL(sql);
 		SQLHelper.Close();
 
-		//HANDLE MESSAGE RECIEVERS
+		
+
+		// Add the message to ChatGroupMessages table (not MessageRecievers)
+		String groupName = ChatGroups.GroupIdGivenName(chatGroup);
+		sql = "INSERT INTO ChatGroupMessages VALUES('" + messageId + "', '" + User.getEmail() + "', '" + groupName + "')";
+		System.out.println(sql);
+		SQLHelper.ExecuteSQL(sql);
+		SQLHelper.Close();
+		
     }
 
 
