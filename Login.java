@@ -39,6 +39,7 @@ public class Login {
 	    if (success == 1) {
 		System.out.println("Successfully logged in!");
 		User.setInfo(name, phone_num, email, pword, screen_name, manager);
+		// ChatGroups.ManageCurrentChatGroups();
 		HomeScreen.Run();
 	    } else {
 		System.out.println("Invalid username/password combo");

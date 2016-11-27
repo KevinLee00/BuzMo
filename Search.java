@@ -46,8 +46,10 @@ public class Search {
 	if (answer == 1) {
 	    String temp[] = new String[names.size()];
 	    answer = Menu.DisplayMenu("Which user would you like to add?", names.toArray(temp));
-	    if (answer <= 0 || answer > names.size())
+	    if (answer <= 0 || answer > names.size()) {
+		System.out.println("Add failed due to: Invalid input");
 		return;
+	}
 
 	    MyCircle.SendFriendRequest(User.getName(), User.getEmail(), emails.get(answer-1));
 	    

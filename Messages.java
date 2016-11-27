@@ -64,9 +64,33 @@ public class Messages {
 		PostMessageToCircle(text[0], friends[answer-2], twords);
 	    }
 	    
+	} else if (answer == 3) { //ChatGroup message
+		ArrayList<String> groups = ChatGroups.getGroups(User.getEmail());
+		if (groups.isEmpty()) {
+			System.out.println("You are not a member of any group chats.");
+		} 
+		else {
+			int response = Menu.DisplayMenu("Pick a group chat to send a message to.", groups.toArray(new String[0]));
+			SendChatGroupMessage(text[0], groups.get(response-1));
+			// id, text, timestamp, sender, owner, type
+
+		} 
 	}
 	
     }
+
+    public static void SendChatGroupMessage(String text, String chatGroup) {
+		int messageId = GetUniqueMessageID();
+		Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
+		int type = CHATGRP_MSG;
+		String sql = "INSERT INTO Messages VALUES('" + messageId + "', '" + text  + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', '" + type + "')";
+		// System.out.println(sql);		
+		SQLHelper.ExecuteSQL(sql);
+		SQLHelper.Close();
+
+		//HANDLE MESSAGE RECIEVERS
+    }
+
 
     public static void CheckInbox() {
 
@@ -204,8 +228,7 @@ public class Messages {
     }
 
     public static void PostMessageToMyCircle(String text, String[] receivers, int is_public) {
-	
-	
+	// Does this need to be implmented?	
     }
 
     public static void PostMessageToCircle(String text, String receiver, String[] twords) {
@@ -235,33 +258,10 @@ public class Messages {
     }
 
 
+
     public static void PrintMessage(MSG m) {
 	System.out.println("------------Displaying Message------------\nMessage ID: " + m.id + "\nTimestamp: " + m.time + "\n\n" + m.text + "\n---------------------------------------------\n");
     }
-    
-    public static void displayPrivateMessages() {
-        /*ArrayList<String> friendsList = new ArrayList<String>();
-        ArrayList<String> friendsEmailList = new ArrayList<String>();
-        ResultSet rs = SQLHelper.ExecuteSQL("SELECT U.name, U.screen_name, U.email FROM Users U");
-        while (rs.next) {
-            friendsList.add(rs.getString(1));
-            friendsEmailList.add(rs.getSTring(3));
-        }
-        int answer = Menu.DisplayMenu(friendsList.toArray());
-        Messages.getPrivateMessagesFrom(friendsEmailList[answer-1]);*/
-
-    }
-
-    public static void getPrivateMessagesFrom(String senderEmail) {
-        /*ResultSet rs = SQLHelper.ExecuteSQL("SELECT M.text, M.timestamp, M.sender FROM Messages M WHERE message_type = 0 AND recipient = " + User.getEmail() + " AND sender = " + senderEmail);
-        while(rs.next()) {
-            System.out.println( currentMessages.getString(1).trim() 
-                                + "at " 
-                                + currentMessages.getString(2).trim() 
-                                + "from " 
-                                + currentMessages.getString(3).trim()
-                                );
-        }
-        SQLHelper.Close();*/
-    }
 }
+    
+   
