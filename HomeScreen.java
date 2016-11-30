@@ -13,7 +13,7 @@ public class HomeScreen {
 	}
 
 	public static void UserOptions() {
-	    String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Logout"};
+	    String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Check Mycircle", "Logout"};
 
 		while (true) {
 		
@@ -32,13 +32,15 @@ public class HomeScreen {
 			Messages.ViewSentMessages();
 		    } else if (answer == 4) {
 			Search.Search();
-			} else if (answer == 5) {
+		    } else if (answer == 5) {
 			ChatGroups.CreateChatGroup();
 		    } else if (answer == 6) {
-		    ChatGroups.ViewChatGroupMessages();
+			ChatGroups.ViewChatGroupMessages();
 		    } else if (answer == 7) {
-		    ChatGroups.ManageCurrentChatGroups();
-			} else if (answer == 8) {
+			ChatGroups.ManageCurrentChatGroups();
+		    } else if (answer == 8) {
+			
+		    } else if (answer == 9) {
 			System.out.println("Sucessfully logged out. Goodbye!");
 			System.exit(0);
 		    }
