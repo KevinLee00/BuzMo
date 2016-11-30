@@ -8,16 +8,20 @@ public class TestOracle {
 
                         Class.forName("oracle.jdbc.driver.OracleDriver");
                         String url = "jdbc:oracle:thin:@uml.cs.ucsb.edu:1521:xe";
-			String username = "christiandaley";
-			String password = "003";
+                        String username = "christiandaley";
+                        String password = "003";
                         Connection con=DriverManager.getConnection(url,username, password);
                         Statement st = con.createStatement();
-			// String sql = "";
-                        String sql = "CREATE TABLE Messages(message_id INT, text VARCHAR(255), timestamp VARCHAR(255), owner VARCHAR(255), sender VARCHAR(255), receiver VARCHAR(255), message_type INT, PRIMARY KEY(message_id))";
+                        String sql = "SELECT sender FROM Messages GROUP BY sender HAVING 4 > COUNT(*)";
+                        // String sql = "SELECT * from messages";
                         ResultSet rs = st.executeQuery(sql);
-                        //while(rs.next())
-				//MODIFY PRINT TO FIT YOUR QUERY AND ATTRIBUTE TYPES
-                        //        System.out.println(rs.getInt(1)+" "+rs.getString(2));
+                        while(rs.next())
+                             System.out.println(rs.getString(1).trim() 
+                                // + " " + rs.getString(2).trim()
+                                // + " " + rs.getString(3).trim()
+                                // + " " + rs.getString(4).trim()
+                                // + " " + rs.getString(5).trim()
+                                );
                         con.close();
                 }
                 catch(Exception e){System.out.println(e);}

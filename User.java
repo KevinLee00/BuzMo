@@ -26,6 +26,10 @@ public class User {
 	return screen_name;
     }
 
+    public static int isManager() {
+    	return is_manager;
+    }
+
     
     public static String NameGivenEmail(String email) {
 	String sql = "SELECT name, screen_name FROM Users WHERE email = '" + email + "'";
@@ -48,6 +52,56 @@ public class User {
 	return name.trim();
 
     }
+
+    public void setNewManager() { // NOT TESTED YET
+    	ArrayList<String> userNames = new ArrayList<String>();
+    	ArrayList<String> userEmails = new ArrayList<String>();
+    	String sql = "SELECT * FROM Users WHERE isManager = '0'";
+    	ResultSet rs = SQLHelper.ExecuteSQL(sql);
+    	try {
+    		while (rs.next()) {
+    			userNames.add(rs.getString(1));
+    			userEmails.add(rs.getString(3));
+    		}
+    	} 
+    	catch (Exception e) {
+    		System.out.println(e);
+    	}
+
+    	SQLHelper.Close();
+
+    	if (userNames.size() == 0) {
+    		System.out.println("There are no users that can be promoted to manager.");
+    	}
+    	else {
+    		int answer = Menu.DisplayMenu("Who would you like to promote to manager?", userNames.toArray(new String[0]));
+    		sql = "UPDATE Users SET isManager = '1' WHERE email = '" + userEmails.get(answer-1) + "'";
+    		SQLHelper.ExecuteSQL(sql);
+    		SQLHelper.Close();
+    	}
+    }
+
+    public void runAnalytics() {
+    	String items[] = {"Find the active users", "Find top messages", "Show number of inactive users", "Show complete report"};
+    	int answer = Menu.DisplayMenu("What would you like to do?", items);
+
+    	if (answer == 1) {
+
+    	}
+    	else if (answer == 2) {
+
+    	}
+
+    	else if (answer == 3) {
+    		String sql = "SELECT sender FROM Messages GROUP BY sender HAVING 4 > COUNT(*)" 
+    	}
+    	else {
+    		System.out.println("Invalid response");
+    		HomeScreen.UserOptions();
+    	}
+    }
+
+
     
 
 }
