@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.*;
 
 public class User {
     private static String name, phone_num, email, pword, screen_name; // Used to login
@@ -53,7 +54,7 @@ public class User {
 
     }
 
-    public void setNewManager() { // NOT TESTED YET
+    public static void setNewManager() { // NOT TESTED YET
     	ArrayList<String> userNames = new ArrayList<String>();
     	ArrayList<String> userEmails = new ArrayList<String>();
     	String sql = "SELECT * FROM Users WHERE isManager = '0'";
@@ -81,27 +82,91 @@ public class User {
     	}
     }
 
-    public void runAnalytics() {
+    public static void runAnalytics() {
     	String items[] = {"Find the active users", "Find top messages", "Show number of inactive users", "Show complete report"};
     	int answer = Menu.DisplayMenu("What would you like to do?", items);
 
-    	if (answer == 1) {
+    	if (answer == 1) { //Find most active users
 
     	}
-    	else if (answer == 2) {
+    	else if (answer == 2) { //Find most viewed messages
 
     	}
 
-    	else if (answer == 3) {
-    		String sql = "SELECT sender FROM Messages GROUP BY sender HAVING 4 > COUNT(*)" 
+    	else if (answer == 3) { // Find number of inactive users
+        	ArrayList<String> usersWithMessages = new ArrayList<String>();
+        	ArrayList<Integer> numberOfMessages = new ArrayList<Integer>();
+        	String sql = "Select sender, COUNT(Messages.sender) FROM Messages GROUP BY sender HAVING 7 > COUNT(Messages.sender)";
+    		ResultSet rs = SQLHelper.ExecuteSQL(sql);
+    		try {
+    			while (rs.next()) {
+    				usersWithMessages.add(rs.getString(1));
+    				numberOfMessages.add(rs.getInt(2));
+    			}
+    		}
+
+
+    		catch (Exception e) {
+    			System.out.println(e);
+    		}
+    		SQLHelper.Close();
+
+    		ArrayList<String> usersWithPrivateMessages = new ArrayList<String>();
+    		ArrayList<Integer> numberOfPrivateMessages = new ArrayList<Integer>();
+    		sql = "Select sender, COUNT(Messages.sender) FROM Messages WHERE type = '0' GROUP BY sender";
+    		rs = SQLHelper.ExecuteSQL(sql);
+    		try {
+    			while (rs.next()) {
+    				usersWithPrivateMessages.add(rs.getString(1));
+    				numberOfPrivateMessages.add(rs.getInt(2));
+    			}
+    		}
+    		catch (Exception e) {
+    			System.out.println(e);
+    		}
+    		SQLHelper.Close();
+
+    		int numInactiveUsers = 0;
+    		sql = "SELECT COUNT(U.email) FROM Users U WHERE U.email NOT IN (SELECT sender FROM Messages)";
+    		rs = SQLHelper.ExecuteSQL(sql);
+    		try {
+    			while (rs.next()) {
+    				numInactiveUsers = rs.getInt(1);
+    			}
+    		}
+    		catch (Exception e) {
+    			System.out.println(e);
+    		}
+
+    		// Check for inactive useres who don't post at all
+    		for (int i=0; i<usersWithPrivateMessages.size(); i++) {
+    			for (int j=0; j<usersWithMessages.size(); j++) {
+	    			if (usersWithPrivateMessages.get(i).equals(usersWithMessages.get(j))) {
+	    				int messageAmount = numberOfMessages.get(j);
+	    				int pMessageAmount = numberOfPrivateMessages.get(i);
+	    				numberOfMessages.set(j, messageAmount - pMessageAmount/2);
+	    			}
+				}
+    		}
+
+    		//Check for inactive users who posted more 0 messages but less than 4
+    		for (int i=0; i<usersWithMessages.size(); i++) {
+    			if (numberOfMessages.get(i) < 4) {
+    				numInactiveUsers++;
+    			}
+    		}
+
+    		System.out.println("There are " + numInactiveUsers + " inactive users on BuzMo.");
+
     	}
     	else {
     		System.out.println("Invalid response");
-    		HomeScreen.UserOptions();
+    		if (User.isManager() == 1) {
+				ManagerOptions();
+			}
+			else {
+				UserOptions();
+			}
     	}
     }
-
-
-    
-
 }

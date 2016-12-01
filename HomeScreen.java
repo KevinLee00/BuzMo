@@ -9,7 +9,9 @@ public class HomeScreen {
 
 		MyCircle.CheckForFriendRequests();
 		ChatGroups.CheckForChatGroupRequests();
-		if (User.isManager == 1) {
+		
+		System.out.println(User.isManager());
+		if (User.isManager() == 1) {
 			ManagerOptions();
 		}
 		else {
@@ -58,7 +60,7 @@ public class HomeScreen {
     }
 
     public static void ManagerOptions() {
-    	String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Check myCircle", "Get BuzMo analytics", "Appoint new manager" "Logout"};
+    	String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Check myCircle", "Get BuzMo analytics", "Appoint new manager", "Logout"};
 
 		while (true) {
 		
@@ -82,7 +84,7 @@ public class HomeScreen {
 		    } else if (answer == 8) {
 		    // CHECK MYCIRCLE
 		    } else if (answer == 9) {
-		    // RUN ANALYTICS
+		    User.runAnalytics();
 		    } else if (answer == 10) {
 		    User.setNewManager();
 			} else if (answer == 11) {
@@ -93,4 +95,5 @@ public class HomeScreen {
 			System.out.println("ERROR: Invald input. Please try again.");
 		    }
 		}
+	}
 }
