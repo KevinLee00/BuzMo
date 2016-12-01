@@ -10,7 +10,6 @@ public class HomeScreen {
 		MyCircle.CheckForFriendRequests();
 		ChatGroups.CheckForChatGroupRequests();
 		
-		System.out.println(User.isManager());
 		if (User.isManager() == 1) {
 			ManagerOptions();
 		}
@@ -50,6 +49,8 @@ public class HomeScreen {
 		    } else if (answer == 9) {
 			System.out.println("Sucessfully logged out. Goodbye!");
 			System.exit(0);
+		    } else if (answer == 1000) { //Update Time for the sake of the presentation project
+		    User.updateDatabaseTime();
 		    }
 
 		    else {
@@ -90,6 +91,8 @@ public class HomeScreen {
 			} else if (answer == 11) {
 			System.out.println("Sucessfully logged out. Goodbye!");
 			System.exit(0);
+		    } else if (answer == 1000) { //Update Time for the sake of the presentation project
+		    User.updateDatabaseTime();
 		    }
 		    else {
 			System.out.println("ERROR: Invald input. Please try again.");

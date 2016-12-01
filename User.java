@@ -32,6 +32,14 @@ public class User {
     }
 
     
+    public static void updateDatabaseTime() {
+    	// System.out.println("Please enter a new timestamp for the system. (ex. '2020-01-01 12:30:15.000')");
+    	String prompts[] = {"Please enter a new timestamp for the system. (ex. '2020-01-01 12:30:15.000')"};
+    	String answer[] = Menu.PromptUser(prompts);
+    	String sql = "UPDATE CurrentTS SET current_timestamp = (TO_TIMESTAMP('" + answer[0] + "', 'YYYY-MM--DD HH24:MI:SS.FF'))";
+   		SQLHelper.ExecuteSQL(sql);
+   		SQLHelper.Close();
+    }
     public static String NameGivenEmail(String email) {
 	String sql = "SELECT name, screen_name FROM Users WHERE email = '" + email + "'";
 	ResultSet rs = SQLHelper.ExecuteSQL(sql);
@@ -87,7 +95,7 @@ public class User {
     	int answer = Menu.DisplayMenu("What would you like to do?", items);
 
     	if (answer == 1) { //Find most active users
-
+    		// String sql = "SELECT sender FROM Messages WHERE "
     	}
     	else if (answer == 2) { //Find most viewed messages
 
@@ -137,6 +145,7 @@ public class User {
     		catch (Exception e) {
     			System.out.println(e);
     		}
+    		SQLHelper.Close();
 
     		// Check for inactive useres who don't post at all
     		for (int i=0; i<usersWithPrivateMessages.size(); i++) {
@@ -161,11 +170,12 @@ public class User {
     	}
     	else {
     		System.out.println("Invalid response");
+    		
     		if (User.isManager() == 1) {
-				ManagerOptions();
+				HomeScreen.ManagerOptions();
 			}
 			else {
-				UserOptions();
+				HomeScreen.UserOptions();
 			}
     	}
     }
