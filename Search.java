@@ -7,7 +7,7 @@ public class Search {
     public static void SearchUsers() {
 	System.out.println("------------Search Menu-------------");
 	//String prompts[] = {"Email", "Topic words", "Last posting (in days)", "Number of posts in last week"};
-	String prompts[] = {"Email", "Topic Words"};
+	String prompts[] = {"Email", "Topic Words", "Post in last n days", "n posts in last 7 days"};
 	String answers[] = Menu.PromptUser(prompts);
 	String twords[] = answers[1].split(" ");
 	
@@ -16,7 +16,16 @@ public class Search {
 	for (int i = 0; i < twords.length; i++) {
 	    sql += " OR email IN (SELECT email FROM TopicWordsU WHERE word = '" + twords[i] + "')";
 	}
-	
+
+	if (answers[2].length() > 0)
+	    sql += " OR email IN (SELECT email FROM Messages M, CurrentTS T WHERE timestamp > (T.current_timestamp - interval '" + answers[2] + "' day))";
+
+	/*
+	if (answers[3].length() > 0)
+	    sql += " OR (SELECT COUNT(M.*) FROM Messages M, CurrentTS T WHERE timestamp > (T.current_timestamp - interval '7' day) GROUP BY email)"
+	*/
+
+
 	ResultSet rs = SQLHelper.ExecuteSQL(sql);
 	ArrayList<String> emails = new ArrayList<String>();
 	ArrayList<String> names = new ArrayList<String>();

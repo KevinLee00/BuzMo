@@ -312,7 +312,7 @@ public class User {
         SQLHelper.Close();
 
         if (senders.size() == 0) {
-            System.out.println("There are no active users in the past 7 days."));
+            System.out.println("There are no active users in the past 7 days.");
         }
         else {
             for (int i=0; i<senders.size(); i++) {
