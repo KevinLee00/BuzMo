@@ -99,7 +99,9 @@ public class Messages {
 		Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
 		int type = CHATGRP_MSG;
 		String sql = "INSERT INTO Messages VALUES('" + messageId + "', '" + text  + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', '" + type + "', '0')";
-		System.out.println(sql);
+		// String sql = "INSERT INTO Messages VALUES('" + messageId + "', '" + text + "', to_timestamp('2016-11-10 10:16:00.000', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', '" + type + "', '0')";
+
+		// System.out.println(sql);
 		SQLHelper.ExecuteSQL(sql);
 		SQLHelper.Close();
 
@@ -108,7 +110,7 @@ public class Messages {
 		// Add the message to ChatGroupMessages table (not MessageRecievers)
 		String groupName = ChatGroups.GroupIdGivenName(chatGroup);
 		sql = "INSERT INTO ChatGroupMessages VALUES('" + messageId + "', '" + User.getEmail() + "', '" + groupName + "')";
-		System.out.println(sql);
+		// System.out.println(sql);
 		SQLHelper.ExecuteSQL(sql);
 		SQLHelper.Close();
 		

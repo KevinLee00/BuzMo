@@ -311,8 +311,13 @@ public class User {
         }
         SQLHelper.Close();
 
-        for (int i=0; i<senders.size(); i++) {
-            System.out.println(senders.get(i) + " with " + count.get(i) + " messages sent.");
+        if (senders.size() == 0) {
+            System.out.println("There are no active users in the past 7 days."));
+        }
+        else {
+            for (int i=0; i<senders.size(); i++) {
+                System.out.println(senders.get(i) + " with " + count.get(i) + " messages sent.");
+            }
         }
     }
 
@@ -339,9 +344,14 @@ public class User {
         }
         SQLHelper.Close();
 
-        for (int i=0; i<output.size(); i++) {
-            System.out.println("'" + output.get(i) + "' by " + authors.get(i));
-            System.out.println("Posted on: " + timeStamp.get(i) + " with " + views.get(i) + " views.\n");
+        if (output.size() == 0) {
+            System.out.println("There are no top messages in the past 7 days.");    
+        } 
+        else {
+            for (int i=0; i<output.size(); i++) {
+                System.out.println("'" + output.get(i) + "' by " + authors.get(i));
+                System.out.println("Posted on: " + timeStamp.get(i) + " with " + views.get(i) + " views.\n");
+            }
         }
     }
 
