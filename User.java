@@ -95,137 +95,137 @@ public class User {
         int answer = Menu.DisplayMenu("What would you like to do?", items);
 
         if (answer == 1) { //Find most active users
-            ArrayList<String> senders = new ArrayList<String>();
-            ArrayList<Integer> count = new ArrayList<Integer>();
-            String sql = "SELECT sender, AMT FROM (SELECT sender, COUNT(M.owner) as AMT FROM Messages M WHERE owner = sender GROUP BY M.sender ORDER BY AMT DESC) WHERE rownum <= 3 ORDER BY AMT DESC";
+            findMostActiveUsers();
+            // ArrayList<String> senders = new ArrayList<String>();
+            // ArrayList<Integer> count = new ArrayList<Integer>();
+            // String sql = "SELECT sender, AMT FROM (SELECT sender, COUNT(M.owner) as AMT FROM Messages M, CurrentTS T WHERE owner = sender AND M.timestamp > (T.current_timestamp - interval '7' day) GROUP BY M.sender ORDER BY AMT DESC) WHERE rownum <= 3 ORDER BY AMT DESC";
 
-            ResultSet rs = SQLHelper.ExecuteSQL(sql);
-            try {
-                while (rs.next()) {
-                    senders.add(rs.getString(1));
-                    count.add(rs.getInt(2));
-                }
-            } 
-            catch (Exception e) {
-                System.out.println(e);
-            }
-            SQLHelper.Close();
-
-
-   //       ArrayList<String> privateMessageSenders = new ArrayList<String>();
-   //       ArrayList<Integer> privateMessageCount = new ArrayList<Integer>();
-            // sql = "SELECT sender, COUNT(sender) FROM Messages WHERE type = '0' GROUP BY sender";
-            // rs = SQLHelper.ExecuteSQL(sql);
+            // ResultSet rs = SQLHelper.ExecuteSQL(sql);
             // try {
-            //  while (rs.next()) {
-            //      privateMessageSenders.add(rs.getString(1));
-            //      privateMessageCount.add(rs.getInt(2));
-
-            //  }
-            // } catch (Exception e) {
-            //  System.out.println(e);
+            //     while (rs.next()) {
+            //         senders.add(rs.getString(1));
+            //         count.add(rs.getInt(2));
+            //     }
+            // } 
+            // catch (Exception e) {
+            //     System.out.println(e);
             // }
             // SQLHelper.Close();
-            
-            // for (int i=0; i<privateMessageSenders.size(); i++) {
-   //           for (int j=0; j<senders.size(); j++) {
-      //            if (privateMessageSenders.get(i).equals(senders.get(j))) {
-      //                int messageAmount = count.get(j);
-      //                int pMessageAmount = privateMessageCount.get(i);
-      //                count.set(j, messageAmount + pMessageAmount/2);
-      //            }
-            //  }
-   //       }
 
-   //       Integer[] countArray = count.toArray(new Integer[count.size()]);
-   //       Arrays.sort(countArray);
+            // for (int i=0; i<senders.size(); i++) {
+            //     System.out.println(senders.get(i) + " with " + count.get(i) + " messages sent.");
+            // }
 
-   //       for (int i = count.size()-3; i>count.size()-4; i++) {
-   //           int index = count.indexOf(countArray[i]);
-                
-   //           System.out.println(senders.get(index) + " " + count.get(index));
-   //       }
+
         }
 
         else if (answer == 2) { //Find most viewed messages
-            String sql = "SELECT * FROM (SELECT * FROM (SELECT * FROM Messages M, CurrentTS T WHERE M.timestamp > (T.current_timestamp - interval '7' day) AND M.type = '1') ORDER BY views DESC) WHERE rownum <= 5 ORDER BY views";
-            ResultSet rs = SQLHelper.ExecuteSQL(sql);
-            try {
-                while(rs.next()) {
-                    System.out.println(rs.getString(2).trim());
-                    System.out.println("Posted On:" + rs.getString(3) + "With " + rs.getString(7) + " views.\n");
-                }
-            }
-            catch (Exception e) {
-                System.out.println(e);
-            }
+            findTopMessages();
+        //     String sql = "SELECT * FROM (SELECT * FROM (SELECT * FROM Messages M, CurrentTS T WHERE M.timestamp > (T.current_timestamp - interval '7' day) AND M.type = '3') ORDER BY views DESC) WHERE rownum <= 5 ORDER BY views";
+        //     ResultSet rs = SQLHelper.ExecuteSQL(sql);
+        //     ArrayList<String> output = new ArrayList<String>();
+        //     ArrayList<String> timeStamp = new ArrayList<String>();
+        //     ArrayList<String> views = new ArrayList<String>();
+        //     try {
+        //         while(rs.next()) {
+        //             output.add(rs.getString(2).trim());
+        //             timeStamp.add(rs.getString(3).trim());
+        //             views.add(rs.getString(7).trim());
+        //             // System.out.println(rs.getString(2).trim());
+        //             // System.out.println("Posted On:" + rs.getString(3) + "With " + rs.getString(7) + " views.\n");
+        //         }
+        //     }
+        //     catch (Exception e) {
+        //         System.out.println(e);
+        //     }
+        //     SQLHelper.Close();
+
+        //     for (int i=0; i<output.size(); i++) {
+        //         System.out.println("'" + output.get(i) + "'");
+        //         System.out.println("Posted on: " + timeStamp.get(i) + " with " + views.get(i) + " views.\n");
+        //     }
         }
+
         else if (answer == 3) { // Find number of inactive users
-            ArrayList<String> usersWithMessages = new ArrayList<String>();
-            ArrayList<Integer> numberOfMessages = new ArrayList<Integer>();
-            String sql = "Select sender, COUNT(Messages.sender) FROM Messages GROUP BY sender HAVING 7 > COUNT(Messages.sender)";
-            ResultSet rs = SQLHelper.ExecuteSQL(sql);
-            try {
-                while (rs.next()) {
-                    usersWithMessages.add(rs.getString(1));
-                    numberOfMessages.add(rs.getInt(2));
-                }
-            }
+            findNumOfInactiveUsers();
+            // ArrayList<String> usersWithMessages = new ArrayList<String>();
+            // ArrayList<Integer> numberOfMessages = new ArrayList<Integer>();
+            // String sql = "Select sender, COUNT(Messages.sender) FROM Messages GROUP BY sender HAVING 7 > COUNT(Messages.sender)";
+            // ResultSet rs = SQLHelper.ExecuteSQL(sql);
+            // try {
+            //     while (rs.next()) {
+            //         usersWithMessages.add(rs.getString(1));
+            //         numberOfMessages.add(rs.getInt(2));
+            //     }
+            // }
 
 
-            catch (Exception e) {
-                System.out.println(e);
-            }
-            SQLHelper.Close();
+            // catch (Exception e) {
+            //     System.out.println(e);
+            // }
+            // SQLHelper.Close();
 
-            ArrayList<String> usersWithPrivateMessages = new ArrayList<String>();
-            ArrayList<Integer> numberOfPrivateMessages = new ArrayList<Integer>();
-            sql = "Select sender, COUNT(Messages.sender) FROM Messages WHERE type = '0' GROUP BY sender";
-            rs = SQLHelper.ExecuteSQL(sql);
-            try {
-                while (rs.next()) {
-                    usersWithPrivateMessages.add(rs.getString(1));
-                    numberOfPrivateMessages.add(rs.getInt(2));
-                }
-            }
-            catch (Exception e) {
-                System.out.println(e);
-            }
-            SQLHelper.Close();
+            // ArrayList<String> usersWithPrivateMessages = new ArrayList<String>();
+            // ArrayList<Integer> numberOfPrivateMessages = new ArrayList<Integer>();
+            // sql = "Select sender, COUNT(Messages.sender) FROM Messages WHERE type = '0' GROUP BY sender";
+            // rs = SQLHelper.ExecuteSQL(sql);
+            // try {
+            //     while (rs.next()) {
+            //         usersWithPrivateMessages.add(rs.getString(1));
+            //         numberOfPrivateMessages.add(rs.getInt(2));
+            //     }
+            // }
+            // catch (Exception e) {
+            //     System.out.println(e);
+            // }
+            // SQLHelper.Close();
 
-            int numInactiveUsers = 0;
-            sql = "SELECT COUNT(U.email) FROM Users U WHERE U.email NOT IN (SELECT sender FROM Messages)";
-            rs = SQLHelper.ExecuteSQL(sql);
-            try {
-                while (rs.next()) {
-                    numInactiveUsers = rs.getInt(1);
-                }
-            }
-            catch (Exception e) {
-                System.out.println(e);
-            }
-            SQLHelper.Close();
+            // int numInactiveUsers = 0;
+            // sql = "SELECT COUNT(U.email) FROM Users U WHERE U.email NOT IN (SELECT sender FROM Messages)";
+            // rs = SQLHelper.ExecuteSQL(sql);
+            // try {
+            //     while (rs.next()) {
+            //         numInactiveUsers = rs.getInt(1);
+            //     }
+            // }
+            // catch (Exception e) {
+            //     System.out.println(e);
+            // }
+            // SQLHelper.Close();
 
-            // Check for inactive useres who don't post at all
-            for (int i=0; i<usersWithPrivateMessages.size(); i++) {
-                for (int j=0; j<usersWithMessages.size(); j++) {
-                    if (usersWithPrivateMessages.get(i).equals(usersWithMessages.get(j))) {
-                        int messageAmount = numberOfMessages.get(j);
-                        int pMessageAmount = numberOfPrivateMessages.get(i);
-                        numberOfMessages.set(j, messageAmount - pMessageAmount/2);
-                    }
-                }
-            }
+            // // Check for inactive useres who don't post at all
+            // for (int i=0; i<usersWithPrivateMessages.size(); i++) {
+            //     for (int j=0; j<usersWithMessages.size(); j++) {
+            //         if (usersWithPrivateMessages.get(i).equals(usersWithMessages.get(j))) {
+            //             int messageAmount = numberOfMessages.get(j);
+            //             int pMessageAmount = numberOfPrivateMessages.get(i);
+            //             numberOfMessages.set(j, messageAmount - pMessageAmount/2);
+            //         }
+            //     }
+            // }
 
-            //Check for inactive users who posted more 0 messages but less than 4
-            for (int i=0; i<usersWithMessages.size(); i++) {
-                if (numberOfMessages.get(i) < 4) {
-                    numInactiveUsers++;
-                }
-            }
+            // //Check for inactive users who posted more 0 messages but less than 4
+            // for (int i=0; i<usersWithMessages.size(); i++) {
+            //     if (numberOfMessages.get(i) < 4) {
+            //         numInactiveUsers++;
+            //     }
+            // }
 
-            System.out.println("There are " + numInactiveUsers + " inactive users on BuzMo.");
+            // System.out.println("There are " + numInactiveUsers + " inactive users on BuzMo.");
 
+        }
+
+        else if (answer == 4) {
+            System.out.println("================== BUZMO REPORT ==================");
+            
+            findMostActiveUsers();
+            System.out.println("\n");
+            
+            findTopMessages();
+            System.out.println("\n");
+            
+            findNumOfInactiveUsers();
+            System.out.println("================== END OF REPORT ======================");
         }
         else {
             System.out.println("Invalid response");
@@ -237,5 +237,121 @@ public class User {
                 HomeScreen.UserOptions();
             }
         }
+    }
+
+    private static void findMostActiveUsers() {
+        System.out.println("Most Active Users:\n");
+        ArrayList<String> senders = new ArrayList<String>();
+        ArrayList<Integer> count = new ArrayList<Integer>();
+        String sql = "SELECT sender, AMT FROM (SELECT sender, COUNT(M.owner) as AMT FROM Messages M, CurrentTS T WHERE owner = sender AND M.timestamp > (T.current_timestamp - interval '7' day) GROUP BY M.sender ORDER BY AMT DESC) WHERE rownum <= 3 ORDER BY AMT DESC";
+
+        ResultSet rs = SQLHelper.ExecuteSQL(sql);
+        try {
+            while (rs.next()) {
+                senders.add(rs.getString(1));
+                count.add(rs.getInt(2));
+            }
+        } 
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        SQLHelper.Close();
+
+        for (int i=0; i<senders.size(); i++) {
+            System.out.println(senders.get(i) + " with " + count.get(i) + " messages sent.");
+        }
+    }
+
+    private static void findTopMessages() {
+        System.out.println("Top Messages:\n");
+        String sql = "SELECT * FROM (SELECT * FROM (SELECT * FROM Messages M, CurrentTS T WHERE M.timestamp > (T.current_timestamp - interval '7' day) AND M.type = '3') ORDER BY views DESC) WHERE rownum <= 5 ORDER BY views";
+        ResultSet rs = SQLHelper.ExecuteSQL(sql);
+        ArrayList<String> output = new ArrayList<String>();
+        ArrayList<String> timeStamp = new ArrayList<String>();
+        ArrayList<String> views = new ArrayList<String>();
+        try {
+            while(rs.next()) {
+                output.add(rs.getString(2).trim());
+                timeStamp.add(rs.getString(3).trim());
+                views.add(rs.getString(7).trim());
+                // System.out.println(rs.getString(2).trim());
+                // System.out.println("Posted On:" + rs.getString(3) + "With " + rs.getString(7) + " views.\n");
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        SQLHelper.Close();
+
+        for (int i=0; i<output.size(); i++) {
+            System.out.println("'" + output.get(i) + "'");
+            System.out.println("Posted on: " + timeStamp.get(i) + " with " + views.get(i) + " views.\n");
+        }
+    }
+
+    private static void findNumOfInactiveUsers() {
+        System.out.println("Inactive Users:\n");
+        ArrayList<String> usersWithMessages = new ArrayList<String>();
+        ArrayList<Integer> numberOfMessages = new ArrayList<Integer>();
+        String sql = "Select sender, COUNT(Messages.sender) FROM Messages GROUP BY sender HAVING 7 > COUNT(Messages.sender)";
+        ResultSet rs = SQLHelper.ExecuteSQL(sql);
+        try {
+            while (rs.next()) {
+                usersWithMessages.add(rs.getString(1));
+                numberOfMessages.add(rs.getInt(2));
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        SQLHelper.Close();
+
+        ArrayList<String> usersWithPrivateMessages = new ArrayList<String>();
+        ArrayList<Integer> numberOfPrivateMessages = new ArrayList<Integer>();
+        sql = "Select sender, COUNT(Messages.sender) FROM Messages WHERE type = '0' GROUP BY sender";
+        rs = SQLHelper.ExecuteSQL(sql);
+        try {
+            while (rs.next()) {
+                usersWithPrivateMessages.add(rs.getString(1));
+                numberOfPrivateMessages.add(rs.getInt(2));
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        SQLHelper.Close();
+
+        int numInactiveUsers = 0;
+        sql = "SELECT COUNT(U.email) FROM Users U WHERE U.email NOT IN (SELECT sender FROM Messages)";
+        rs = SQLHelper.ExecuteSQL(sql);
+        try {
+            while (rs.next()) {
+                numInactiveUsers = rs.getInt(1);
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        SQLHelper.Close();
+
+        // Check for inactive useres who don't post at all
+        for (int i=0; i<usersWithPrivateMessages.size(); i++) {
+            for (int j=0; j<usersWithMessages.size(); j++) {
+                if (usersWithPrivateMessages.get(i).equals(usersWithMessages.get(j))) {
+                    int messageAmount = numberOfMessages.get(j);
+                    int pMessageAmount = numberOfPrivateMessages.get(i);
+                    numberOfMessages.set(j, messageAmount - pMessageAmount/2);
+                }
+            }
+        }
+
+        //Check for inactive users who posted more 0 messages but less than 4
+        for (int i=0; i<usersWithMessages.size(); i++) {
+            if (numberOfMessages.get(i) < 4) {
+                numInactiveUsers++;
+            }
+        }
+
+        System.out.println("There are " + numInactiveUsers + " inactive users on BuzMo.");
     }
 }
