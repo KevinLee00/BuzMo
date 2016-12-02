@@ -7,10 +7,16 @@ public class Search {
     public static void SearchUsers() {
 	System.out.println("------------Search Menu-------------");
 	//String prompts[] = {"Email", "Topic words", "Last posting (in days)", "Number of posts in last week"};
-	String prompts[] = {"Email"};
+	String prompts[] = {"Email", "Topic Words"};
 	String answers[] = Menu.PromptUser(prompts);
+	String twords[] = answers[1].split(" ");
 	
 	String sql = "SELECT name, email FROM Users WHERE email = '" + answers[0] + "'";
+
+	for (int i = 0; i < twords.length; i++) {
+	    sql += " OR email IN (SELECT email FROM TopicWordsU WHERE word = '" + twords[i] + "')";
+	}
+	
 	ResultSet rs = SQLHelper.ExecuteSQL(sql);
 	ArrayList<String> emails = new ArrayList<String>();
 	ArrayList<String> names = new ArrayList<String>();
@@ -34,7 +40,7 @@ public class Search {
 
 	System.out.println(names.size() + " user(s) found according to search parameters:");
 	for (int i = 0; i < names.size(); i++) {
-	    System.out.println(names.get(i) + " (" + emails.get(i) + ")");
+	    System.out.println(User.NameGivenEmail(emails.get(i)));
 	}
 
 	if (names.size() == 0)
