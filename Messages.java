@@ -98,7 +98,7 @@ public class Messages {
 		int messageId = GetUniqueMessageID();
 		Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
 		int type = CHATGRP_MSG;
-		String sql = "INSERT INTO Messages VALUES('" + messageId + "', '" + text  + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', '" + type + "', '0')";
+		String sql = "INSERT INTO Messages VALUES('" + messageId + "', '" + text  + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', '" + type + "')";
 		System.out.println(sql);
 		SQLHelper.ExecuteSQL(sql);
 		SQLHelper.Close();
@@ -125,14 +125,22 @@ public class Messages {
 	SQLHelper.Close();
 	*/
 	/*
-	String s = "DELETE FROM Messages WHERE 1=1";
+	String s = "DELETE FROM ChatGroupMessages WHERE 1=1";
 	SQLHelper.ExecuteSQL(s);
 	SQLHelper.Close();
-
+	s = "DELETE FROM Messages WHERE 1=1";
+	SQLHelper.ExecuteSQL(s);
+	SQLHelper.Close();
+	
 	s = "DELETE FROM MessageReceivers WHERE 1=1";
 	SQLHelper.ExecuteSQL(s);
 	SQLHelper.Close();
+
+	s = "DELETE FROM TopicWordsM WHERE 1=1";
+	SQLHelper.ExecuteSQL(s);
+	SQLHelper.Close();
 	*/
+	
 	String sql = "SELECT * FROM Messages M WHERE (M.type = 0 AND M.id IN (SELECT id FROM MessageReceivers MR WHERE MR.email = '" + User.getEmail() + "') AND M.owner = '" + User.getEmail() + "')";
 	
 	sql += " UNION SELECT * FROM Messages M Where (M.type = 1 AND M.id IN (SELECT id FROM MessageReceivers MR WHERE MR.email = '" + User.getEmail() + "')) OR M.type = 3";
@@ -158,19 +166,6 @@ public class Messages {
 	String names[] = new String[messages.size()];
 	for (int i = 0; i < messages.size(); i++) {
 	    MSG m = messages.get(i);
-	    /*
-	    sql = "SELECT email FROM MessageReceivers WHERE id = " + m.id;
-	    rs = SQLHelper.ExecuteSQL(sql);
-
-	    try {
-		if (rs.next())
-		    m.receiver = rs.getString(1).trim();
-	    } catch (Exception e) {System.out.println(e);}
-
-
-	    SQLHelper.Close();
-
-	    */
 	    
 	    if (m.type == PRIVATE_MSG)
 		names[i] = "From: " + User.NameGivenEmail(m.sender) + " [Private]";
@@ -243,24 +238,7 @@ public class Messages {
 
 	for (int i = 0; i < messages.size(); i++) {
 	    MSG m = messages.get(i);
-	    
-	    sql = "SELECT email FROM MessageReceivers WHERE id = " + m.id;
-	    names[i] = "";
-	    
-	    //sql = "DELETE FROM Messages WHERE id = " + m.id;
-	    //SQLHelper.ExecuteSQL(sql);
-	    //System.exit(0);
-	    
-	    rs = SQLHelper.ExecuteSQL(sql);
-	    try {
-		while (rs.next()) {
-		    names[i] += rs.getString(1).trim() + " ";
-		}
-	    } catch (Exception e) {System.out.println(e);}
-
-	    SQLHelper.Close();
-	    
-
+	    names[i] = m.sender;
 	   	    
 	    if (m.type == PRIVATE_MSG)
 		names[i] += " [PRIVATE]";
@@ -356,36 +334,36 @@ public class Messages {
 
 	int type = receivers == null ? CIRCLE_MSG_PUB : CIRCLE_MSG;
 	
-	String sql = "INSERT INTO Messages VALUES (" + id + ", '" + text + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', " + type + ", '0')";
+	String sql = "INSERT INTO Messages VALUES (" + id + ", '" + text + "', to_timestamp('" + "2016-11-13 10:50:00.00" + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', " + type + ", '0')";
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
 	
-	ResultSet rs;	
-	ArrayList<String> friends = new ArrayList<String>();
 	if (receivers == null) {
+	    ArrayList<String> all = new ArrayList<String>();
 	    sql = "SELECT email FROM Users WHERE email <> '" + User.getEmail() + "'";
-	    rs = SQLHelper.ExecuteSQL(sql);
+	    ResultSet rs = SQLHelper.ExecuteSQL(sql);
 	    try {
 		while (rs.next()) {
-		    friends.add(rs.getString(1).trim());
+		    all.add(rs.getString(1).trim());
 		}
 	    } catch (Exception e) {System.out.println(e);}
 
-	} else {
-	    for (int i = 0; i < receivers.length; i++) {
-		if (!friends.contains(receivers[i]))
-		    friends.add(receivers[i]);
-		String[] temp = MyCircle.GetFriends(receivers[i]);
-		for (int j = 0; j < temp.length; j++) {
-		    if (!friends.contains(temp[j]))
-			friends.add(temp[j]);
-		}
+	    SQLHelper.Close();
+	    
+	    receivers = new String[all.size()];
+	    for (int i = 0; i < all.size(); i++) {
+		receivers[i] = all.get(i);
 	    }
+	    
 	}
+
+	sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + User.getEmail() + "')";
+	SQLHelper.ExecuteSQL(sql);
+	SQLHelper.Close();
+
 	
-	
-	for (int i = 0; i < friends.size(); i++) {
-	    sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + friends.get(i) + "')";
+	for (int i = 0; i < receivers.length; i++) {
+	    sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + receivers[i] + "')";
 	    SQLHelper.ExecuteSQL(sql);
 	    SQLHelper.Close();
 	    
@@ -398,10 +376,10 @@ public class Messages {
 	    SQLHelper.Close();
 	}
 	
-
+	/*
 	for (int i = 0; i < friends.size(); i++) {
 	    System.out.println(friends.get(i));
-	}
+	    }*/
 	
 	/*String sql = "ALTER TABLE MessageReceivers ADD primary INTEGER";
 	SQLHelper.ExecuteSQL(sql);

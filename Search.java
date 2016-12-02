@@ -98,20 +98,8 @@ public class Search {
 	String names[] = new String[messages.size()];
 	for (int i = 0; i < messages.size(); i++) {
 	    Messages.MSG m = messages.get(i);
-
-	    sql = "SELECT email FROM MessageReceivers WHERE id = " + m.id + " AND primary = 1";
-	    rs = SQLHelper.ExecuteSQL(sql);
-
-	    try {
-		if (rs.next())
-		    m.receiver = rs.getString(1).trim();
-	    } catch (Exception e) {System.out.println(e);}
-
-
-	    SQLHelper.Close();
-
-	    
-	    names[i] = "From: " + User.NameGivenEmail(m.sender) + " [" + User.NameGivenEmail(m.receiver) + "'s Circle]";
+	    	    
+	    names[i] = "From: " + User.NameGivenEmail(m.sender) + " [Circle]";
 
 	}
 
