@@ -4,13 +4,17 @@ import java.util.*;
 public class MyCircle {
 
     public static void SendFriendRequest(String name1, String email1, String email2) {
-
 	/*
-	String sql = "CREATE TABLE FriendRequests (name1 CHAR(20) NOT NULL, email1 CHAR(20), email2 CHAR(20) NOT NULL, FOREIGN KEY(email1) REFERENCES Users(email), PRIMARY KEY(email1))";
-	SQLHelper.ExecuteSQL(sql);
+	String s = "DROP TABLE FriendRequests";
+	SQLHelper.ExecuteSQL(s);
+	SQLHelper.Close();
+	
+	
+	s = "CREATE TABLE FriendRequests (name1 CHAR(20) NOT NULL, email1 CHAR(20) REFERENCES Users(email), email2 CHAR(20) REFERENCES Users(email), PRIMARY KEY(email1, email2))";
+	SQLHelper.ExecuteSQL(s);
 	SQLHelper.Close();
 	*/
-
+	
 
 	if (AreFriends(email1, email2)) {
 	    System.out.println("You are already friends with this user");
@@ -21,7 +25,7 @@ public class MyCircle {
 
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
-
+	
 	System.out.println("Friend request sent");
 	
     }
