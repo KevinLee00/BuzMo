@@ -1,5 +1,4 @@
 import java.util.Scanner;
-
 public class Menu {
 
     private static Scanner scanner = new Scanner(System.in);
@@ -14,8 +13,8 @@ public class Menu {
 	}
 
 	int answer = Integer.parseInt(scanner.nextLine());
-	//System.out.print("\033[H\033[2J");
-	//System.out.flush();
+	System.out.print("\033[H\033[2J");
+	System.out.flush();
 	
 	return answer;
     }
@@ -28,8 +27,8 @@ public class Menu {
 		    answers[i] = scanner.nextLine();
 		}
 
-		//	System.out.print("\033[H\033[2J");
-		//System.out.flush();
+		System.out.print("\033[H\033[2J");
+		System.out.flush();
 
 		return answers;
 		

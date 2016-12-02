@@ -142,6 +142,11 @@ public class Messages {
 	SQLHelper.ExecuteSQL(s);
 	SQLHelper.Close();
 	*/
+	/*
+	String s = "CREATE TABLE Views (id INTEGER NOT NULL, timestamp TIMESTAMP NOT NULL, PRIMARY KEY(id, timestamp))";
+	SQLHelper.ExecuteSQL(s);
+	SQLHelper.Close();
+	*/
 	
 	String sql = "SELECT * FROM Messages M WHERE (M.type = 0 AND M.id IN (SELECT id FROM MessageReceivers MR WHERE MR.email = '" + User.getEmail() + "') AND M.owner = '" + User.getEmail() + "')";
 	
@@ -184,6 +189,13 @@ public class Messages {
 	String message_id = m.id;
 	String owner = m.owner;
 	sql = "UPDATE Messages SET views = views+1 WHERE id = " + m.id + " AND owner = '" + m.owner + "'";
+	SQLHelper.ExecuteSQL(sql);
+	SQLHelper.Close();
+
+	Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
+	
+	sql = "INSERT INTO Views VALUES (" + m.id +  ", to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'))";
+	//System.out.println(sql);
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
 	
@@ -336,7 +348,7 @@ public class Messages {
 
 	int type = receivers == null ? CIRCLE_MSG_PUB : CIRCLE_MSG;
 	
-	String sql = "INSERT INTO Messages VALUES (" + id + ", '" + text + "', to_timestamp('" + "2016-11-13 10:50:00.00" + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', " + type + ", '0')";
+	String sql = "INSERT INTO Messages VALUES (" + id + ", '" + text + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', " + type + ", '0')";
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
 	

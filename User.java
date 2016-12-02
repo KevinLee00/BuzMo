@@ -277,7 +277,10 @@ public class User {
             
             findTopMessages();
             System.out.println("\n");
-            
+
+	    findTotalMessageReads();
+	    System.out.println("\n");
+	    
             findNumOfInactiveUsers();
             System.out.println("================== END OF REPORT ======================");
         }
@@ -434,6 +437,24 @@ public class User {
         catch (Exception e) {
             System.out.println(e);
         }
+
+	SQLHelper.Close();
         System.out.println("There have been " + num + " new messages in the past 7 days.");
+    }
+
+    private static void findTotalMessageReads() {
+	//System.out.println("Total message reads in the last 7 days:");
+	String sql = "SELECT COUNT(*) FROM Views V";
+
+	int n = 0;
+	ResultSet rs = SQLHelper.ExecuteSQL(sql);
+	try {
+	    if (rs.next())
+		n = rs.getInt(1);
+	} catch (Exception e) {System.out.println(e);}
+
+	System.out.println("Total message reads in the last 7 days: " + n);
+	
+	SQLHelper.Close();
     }
 }

@@ -75,7 +75,7 @@ public class Search {
     public static void SearchMessages() {
 	String prompts[] = {"Topic Words"};
 	String words[] = Menu.PromptUser(prompts)[0].split(" ");
-	String sql = "SELECT * FROM Messages WHERE type = 3 AND id IN (SELECT id FROM TopicWordsM WHERE ";
+	String sql = "SELECT * FROM Messages WHERE id IN (SELECT id FROM TopicWordsM WHERE ";
 	for (int i = 0; i < words.length; i++) {
 	    sql += "word = '" + words[i] + "'";
 	    if (i != words.length - 1)
