@@ -19,7 +19,7 @@ public class HomeScreen {
 	}
 
 	public static void UserOptions() {
-	    String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Search MyCircle Messages", "Add/delete topic words", "Logout"};
+	    String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View or delete messages in a chat group", "Manage existing chat groups", "Search MyCircle Messages", "Add/delete topic words", "Logout"};
 
 		while (true) {
 		
@@ -64,7 +64,7 @@ public class HomeScreen {
     }
 
     public static void ManagerOptions() {
-    	String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Search MyCircle Messages", "Add/delete topic words", "Get BuzMo analytics", "Appoint new manager", "Logout"};
+    	String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View or delete messages in a chat group", "Manage existing chat groups", "Search MyCircle Messages", "Add/delete topic words", "Get BuzMo analytics", "Appoint new manager", "Logout"};
 
 		while (true) {
 		

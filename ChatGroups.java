@@ -224,26 +224,69 @@ public class ChatGroups {
     	String groupName = listOfGroups.get(answer-1);
     	String groupId = GroupIdGivenName(groupName);
 
-    	String sql = "SELECT M.text, M.timestamp, M.sender FROM Messages M, ChatGroupMessages G WHERE G.group_id = '" + groupId + "' AND M.id = G.message_id";
-    	ResultSet rs = SQLHelper.ExecuteSQL(sql);
-    	try {
-    		while(rs.next()) {
-    			messages.add("'" + rs.getString(1).trim() + "' at " + rs.getString(2).trim() + " from " + rs.getString(3).trim());
-    		}
-    	}
-    	catch(Exception e) { 
-    		System.out.println(e); 
-    	}
-    	
-    	SQLHelper.Close();
+    	String options[] = {"View Message(s)", "Delete Message(s)"};
+    	int viewOrDelete = Menu.DisplayMenu("Which would you like to do?", options);
+    	if (viewOrDelete == 1) {
 
-    	if (messages.isEmpty()) {
-    		System.out.println("There are no messages in this group chat (yet).");
-    	}
-    	else {
-    		for (int i = 0; i<messages.size(); i++) {
-    			System.out.println(messages.get(i));
-    		}
-    	}
-    }
+	    	String sql = "SELECT M.text, M.timestamp, M.sender FROM Messages M, ChatGroupMessages G WHERE G.group_id = '" + groupId + "' AND M.id = G.message_id";
+	    	ResultSet rs = SQLHelper.ExecuteSQL(sql);
+	    	try {
+	    		while(rs.next()) {
+	    			messages.add("'" + rs.getString(1).trim() + "' at " + rs.getString(2).trim() + " from " + rs.getString(3).trim());
+	    		}
+	    	}
+	    	catch(Exception e) { 
+	    		System.out.println(e); 
+	    	}
+	    	
+	    	SQLHelper.Close();
+
+	    	if (messages.isEmpty()) {
+	    		System.out.println("There are no messages in this group chat (yet).");
+	    	}
+	    	else {
+	    		for (int i = 0; i<messages.size(); i++) {
+	    			System.out.println(messages.get(i));
+	    		}
+	    	}
+	    }
+	    else if (viewOrDelete == 2) {
+	    	ArrayList<String> usermessages = new ArrayList<String>();
+	    	// ArrayList<String> timestamp = new ArrayList<String>();
+	    	// ArrayList<String> sender = new ArrayList<String>();
+	    	ArrayList<String> id = new ArrayList<String>();
+	    	String sql = "SELECT M.text, M.timestamp, M.sender, M.id FROM Messages M, ChatGroupMessages G WHERE sender = '" + User.getEmail() + "' AND G.message_id = M.id";
+	    	ResultSet rs = SQLHelper.ExecuteSQL(sql);
+	    	try {
+	    		while(rs.next()) {
+	    			usermessages.add(rs.getString(1).trim());
+	    			// timestamp.add(rs.getString(2).trim());
+	    			// sender.add(rs.getString(3).trim());
+	    			id.add(rs.getString(4));
+	    		}
+	    	}
+	    	catch (Exception e) {
+	    		System.out.println(e);
+	    	}
+	    	SQLHelper.Close();
+
+	    	if (usermessages.size() == 0) {
+	    		System.out.println("You have made no messages in this chat group.");
+	    	}
+	    	else {
+
+		    	int messageIndex = Menu.DisplayMenu("Which message would you like to delete?", usermessages.toArray(new String[0]));
+		    	String messageIdToDelete = id.get(messageIndex-1);
+		    	
+		    	sql = "DELETE FROM ChatGroupMessages WHERE message_id = '" + messageIdToDelete + "'";
+		    	SQLHelper.ExecuteSQL(sql);
+		    	SQLHelper.Close();
+
+		    	sql = "DELETE FROM Messages WHERE id = '" + messageIdToDelete + "'";
+				SQLHelper.ExecuteSQL(sql);
+		    	SQLHelper.Close();
+		    }
+	    }
+	}
 }
+

@@ -98,7 +98,7 @@ public class Messages {
 		int messageId = GetUniqueMessageID();
 		Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
 		int type = CHATGRP_MSG;
-		String sql = "INSERT INTO Messages VALUES('" + messageId + "', '" + text  + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', '" + type + "')";
+		String sql = "INSERT INTO Messages VALUES('" + messageId + "', '" + text  + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', '" + type + "', '0')";
 		System.out.println(sql);
 		SQLHelper.ExecuteSQL(sql);
 		SQLHelper.Close();
