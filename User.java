@@ -270,7 +270,8 @@ public class User {
 
         else if (answer == 4) {
             System.out.println("================== BUZMO REPORT ==================");
-            
+            numOfNewMessages();
+            System.out.println("\n");
             findMostActiveUsers();
             System.out.println("\n");
             
