@@ -61,7 +61,60 @@ public class User {
     return name.trim();
 
     }
+    public static void EditTopicWords() {
+	/*String s = "CREATE TABLE TopicWordsU (word CHAR(20), email CHAR(20) REFERENCES Users(email), PRIMARY KEY(word, email))";
+	SQLHelper.ExecuteSQL(s);
+	SQLHelper.Close();
+	*/
+	
+	String items[] = {"Add", "Delete"};
+	int answer = Menu.DisplayMenu("Would you like to add or delete your topic words?", items);
+	if (answer == 1) {
+	    String prompts[] = {"Topic words"};
+	    String words[] = Menu.PromptUser(prompts)[0].split(" ");
 
+	    for (int i = 0; i < words.length; i++) {
+		String sql = "INSERT INTO TopicWordsU VALUES ('" + words[i] + "', '" + User.getEmail() + "')";
+		SQLHelper.ExecuteSQL(sql);
+		SQLHelper.Close();
+	    }
+
+	    System.out.println("Topic words added!");
+	} else {
+	    String sql = "SELECT word FROM TopicWordsU WHERE email = '" + User.getEmail() + "'";
+	    ArrayList<String> twords = new ArrayList<String>();
+	    ResultSet rs = SQLHelper.ExecuteSQL(sql);
+
+	    try {
+		while (rs.next()) {
+		    twords.add(rs.getString(1).trim());
+		}
+
+		
+	    } catch (Exception e) {System.out.println(e);}
+
+	    SQLHelper.Close();
+
+	    if (twords.size() == 0) {
+		System.out.println("No topic words to delete");
+		return;
+	    }
+	    
+	    String words[] = new String[twords.size()];
+	    for (int i = 0; i < twords.size(); i++) {
+		words[i] = twords.get(i);
+	    }
+
+	    answer = Menu.DisplayMenu("Which topic word would you like to delete?", words);
+
+	    sql = "DELETE FROM TopicWordsU WHERE word = '" + words[answer-1] + "' AND email = '" + User.getEmail() + "'";
+	    SQLHelper.ExecuteSQL(sql);
+	    SQLHelper.Close();
+
+	    System.out.println("Topic word deleted!");
+	    
+	}
+    }
     public static void setNewManager() { // NOT TESTED YET
         ArrayList<String> userNames = new ArrayList<String>();
         ArrayList<String> userEmails = new ArrayList<String>();
@@ -356,7 +409,7 @@ public class User {
     }
 
     private static void numOfNewMessages() {
-        System.out.println("Number of new messages in the last 7 days:")
+        /*System.out.println("Number of new messages in the last 7 days:");
         String sql = "SELECT COUNT(*) FROM Messages M, CurrentTS T WHERE sender = owner AND M.timestamp > (T.current_timestamp - interval '7' day)";
         int num = 0;
         try {
@@ -367,6 +420,6 @@ public class User {
         catch (Exception e) {
             System.out.println(e);
         }
-        System.out.println("There have been " + num + " new messages in the past 7 days.");
+        System.out.println("There have been " + num + " new messages in the past 7 days.");*/
     }
 }

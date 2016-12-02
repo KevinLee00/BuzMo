@@ -19,7 +19,7 @@ public class HomeScreen {
 	}
 
 	public static void UserOptions() {
-	    String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Logout"};
+	    String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Search MyCircle Messages", "Add/delete topic words", "Logout"};
 
 		while (true) {
 		
@@ -37,7 +37,7 @@ public class HomeScreen {
 		    } else if (answer == 3) {
 			Messages.ViewSentMessages();
 		    } else if (answer == 4) {
-			Search.Search();
+			Search.SearchUsers();
 		    } else if (answer == 5) {
 			ChatGroups.CreateChatGroup();
 		    } else if (answer == 6) {
@@ -45,6 +45,11 @@ public class HomeScreen {
 		    } else if (answer == 7) {
 			ChatGroups.ManageCurrentChatGroups();
 		    } else if (answer == 8) {
+
+			Search.SearchMessages();
+		    } else if (answer == 9) {
+			User.EditTopicWords();
+		    } else if (answer == 10) {
 			System.out.println("Sucessfully logged out. Goodbye!");
 			System.exit(0);
 		    } else if (answer == 1000) { //Update Time for the sake of the presentation project
@@ -59,7 +64,7 @@ public class HomeScreen {
     }
 
     public static void ManagerOptions() {
-    	String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Get BuzMo analytics", "Appoint new manager", "Logout"};
+    	String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Search MyCircle Messages", "Add/delete topic words", "Get BuzMo analytics", "Appoint new manager", "Logout"};
 
 		while (true) {
 		
@@ -67,28 +72,32 @@ public class HomeScreen {
 
 		    // Send messages
 		    if (answer == 1) {
-		    Messages.ComposeMessage();
+			Messages.ComposeMessage();
 		    } else if (answer == 2 ) {
 			Messages.CheckInbox();
 		    } else if (answer == 3) {
 			Messages.ViewSentMessages();
 		    } else if (answer == 4) {
-			Search.Search();
-			} else if (answer == 5) {
+			Search.SearchUsers();
+		    } else if (answer == 5) {
 			ChatGroups.CreateChatGroup();
 		    } else if (answer == 6) {
-		    ChatGroups.ViewChatGroupMessages();
+			ChatGroups.ViewChatGroupMessages();
 		    } else if (answer == 7) {
-		    ChatGroups.ManageCurrentChatGroups();
+			ChatGroups.ManageCurrentChatGroups();
 		    } else if (answer == 8) {
-		    User.runAnalytics();
+			Search.SearchMessages();
 		    } else if (answer == 9) {
-		    User.setNewManager();
-			} else if (answer == 10) {
+			User.EditTopicWords();
+		    } else if (answer == 10) {
+			User.runAnalytics();
+		    } else if (answer == 11) {
+			User.setNewManager();
+		    } else if (answer == 12) {
 			System.out.println("Sucessfully logged out. Goodbye!");
 			System.exit(0);
 		    } else if (answer == 1000) { //Update Time for the sake of the presentation project
-		    User.updateDatabaseTime();
+			User.updateDatabaseTime();
 		    }
 		    else {
 			System.out.println("ERROR: Invald input. Please try again.");

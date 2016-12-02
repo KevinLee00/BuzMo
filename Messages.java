@@ -1,13 +1,15 @@
 import java.util.*;
 import java.sql.*;
 
+
 public class Messages {
     public static final int PRIVATE_MSG = 0;
     public static final int CIRCLE_MSG = 1;
     public static final int CHATGRP_MSG = 2;
     public static final int CIRCLE_MSG_PUB = 3;
+
     
-    private static class MSG {
+    public static class MSG {
 	public String text, id, time, sender, receiver, owner;
 	public int type;
 
@@ -81,7 +83,7 @@ public class Messages {
     }
 
     public static void SendChatGroupMessage(String text, String chatGroup) {
-		// First find the members of the chat group
+	// First find the members of the chat group
 		// ArrayList<String> members = new ArrayList<String>();
 		// String sql = "SELECT M.member FROM ChatGroups G, ChatGroupMembers M WHERE G.group_id = M.group_id AND G.name = '" + chatGroup + "'";
 		// ResultSet rs = SQLHelper.ExecuteSQL(sql);
@@ -160,6 +162,8 @@ public class Messages {
 
 
 	    SQLHelper.Close();
+
+	    
 	    
 	    if (m.type == PRIVATE_MSG)
 		names[i] = "From: " + User.NameGivenEmail(m.sender) + " [Private]";
@@ -183,6 +187,10 @@ public class Messages {
 	    answer = Menu.DisplayMenu("Delete message?", Menu.YesNo);
 	    if (answer == 1) {
 		sql = "DELETE FROM Messages WHERE id = " + m.id + " AND owner = '" + m.owner + "'";
+		SQLHelper.ExecuteSQL(sql);
+		SQLHelper.Close();
+
+		sql = "DELETE FROM TopicWordsM WHERE id = " + m.id;
 		SQLHelper.ExecuteSQL(sql);
 		SQLHelper.Close();
 
@@ -264,6 +272,10 @@ public class Messages {
 		SQLHelper.ExecuteSQL(sql);
 		SQLHelper.Close();
 
+		sql = "DELETE FROM TopicWordsM WHERE id = " + m.id;
+		SQLHelper.ExecuteSQL(sql);
+		SQLHelper.Close();
+
 		sql = "SELECT * FROM Messages WHERE id = " + m.id;
 		rs = SQLHelper.ExecuteSQL(sql);
 		try {
@@ -322,7 +334,11 @@ public class Messages {
 
     
     public static void PostMessageToCircle(String text, String receiver, String[] twords, int ispublic) {	
-	
+	/*
+	String s = "CREATE TABLE TopicWordsM (word CHAR(20) NOT NULL, id INTEGER NOT NULL, PRIMARY KEY(word, id))";
+	SQLHelper.ExecuteSQL(s);
+	SQLHelper.Close();
+	*/
 	int id = GetUniqueMessageID();
 
 	Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
@@ -345,6 +361,14 @@ public class Messages {
 	    SQLHelper.ExecuteSQL(sql);
 	    SQLHelper.Close();
 	}
+
+
+	for (int i = 0; i < twords.length; i++) {
+	    sql = "INSERT INTO TopicWordsM VALUES ('" + twords[i] + "', " + id + ")";
+	    SQLHelper.ExecuteSQL(sql);
+	    SQLHelper.Close();
+	}
+	
 	/*String sql = "ALTER TABLE MessageReceivers ADD primary INTEGER";
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();*/
@@ -370,7 +394,29 @@ public class Messages {
 
 
     public static void PrintMessage(MSG m) {
-	System.out.println("------------Displaying Message------------\nMessage ID: " + m.id + "\nTimestamp: " + m.time + "\n\n" + m.text + "\n---------------------------------------------\n");
+	ArrayList<String> twords = new ArrayList<String>();
+	String sql = "SELECT word FROM TopicWordsM WHERE id = " + m.id;
+	ResultSet rs = SQLHelper.ExecuteSQL(sql);
+	try {
+	    while (rs.next()) {
+		twords.add(rs.getString(1).trim());
+	    }
+	} catch (Exception e) {System.out.println(e);}
+
+	
+	String msg = "------------Displaying Message------------\nMessage ID: " + m.id + "\nTimestamp: " + m.time + "\n\n" + m.text + "\n";
+
+	if (twords.size() != 0) {
+	    msg += "Topic Words: ";
+	    for (int i = 0; i < twords.size(); i++) {
+		msg += twords.get(i) + " ";
+	    }
+	}
+
+	msg += "\n------------------------------------";
+
+
+	System.out.println(msg);
     }
 }
     

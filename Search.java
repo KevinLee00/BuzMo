@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class Search {
 
 
-    public static void Search() {
+    public static void SearchUsers() {
 	System.out.println("------------Search Menu-------------");
 	//String prompts[] = {"Email", "Topic words", "Last posting (in days)", "Number of posts in last week"};
 	String prompts[] = {"Email"};
@@ -56,6 +56,73 @@ public class Search {
 	}
 	
     }
+
+    public static void SearchMessages() {
+	String prompts[] = {"Topic Words"};
+	String words[] = Menu.PromptUser(prompts)[0].split(" ");
+	String sql = "SELECT * FROM Messages WHERE type = 3 AND id IN (SELECT id FROM TopicWordsM WHERE ";
+	for (int i = 0; i < words.length; i++) {
+	    sql += "word = '" + words[i] + "'";
+	    if (i != words.length - 1)
+		sql += " OR ";
+	    else
+		sql += ")";
+	}
+
+	ArrayList<Messages.MSG> messages = new ArrayList<Messages.MSG>();
+	
+	ResultSet rs = SQLHelper.ExecuteSQL(sql);
+
+	try {
+	    while (rs.next()) {
+		messages.add(new Messages.MSG(rs.getString(1).trim(), rs.getString(2).trim(), rs.getString(3).trim(), rs.getString(4).trim(), null, rs.getString(5).trim(), rs.getInt(6)));
+	    }
+	} catch (Exception e) {System.out.println(e);}
+
+	SQLHelper.Close();
+
+	if (messages.size() == 0) {
+	    System.out.println("There are no public messages with these topic words");
+	    return;
+	}
+
+	
+	System.out.println(messages.size() + " message(s) found");
+
+	String names[] = new String[messages.size()];
+	for (int i = 0; i < messages.size(); i++) {
+	    Messages.MSG m = messages.get(i);
+
+	    sql = "SELECT email FROM MessageReceivers WHERE id = " + m.id + " AND primary = 1";
+	    rs = SQLHelper.ExecuteSQL(sql);
+
+	    try {
+		if (rs.next())
+		    m.receiver = rs.getString(1).trim();
+	    } catch (Exception e) {System.out.println(e);}
+
+
+	    SQLHelper.Close();
+
+	    
+	    names[i] = "From: " + User.NameGivenEmail(m.sender) + " [" + User.NameGivenEmail(m.receiver) + "'s Circle]";
+
+	}
+
+
+	int answer = Menu.DisplayMenu("Which message would you like to read?", names);
+	Messages.MSG m = messages.get(answer-1);
+	Messages.PrintMessage(m);
+
+	String message_id = m.id;
+	String owner = m.owner;
+	sql = "UPDATE Messages SET views = views+1 WHERE id = " + m.id + " AND owner = '" + m.owner + "'";
+	SQLHelper.ExecuteSQL(sql);
+	SQLHelper.Close();
+	
+	
+    }
+    
     
 
 }
