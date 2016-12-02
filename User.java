@@ -317,15 +317,17 @@ public class User {
 
     private static void findTopMessages() {
         System.out.println("Top Messages:");
-        String sql = "SELECT * FROM (SELECT * FROM (SELECT * FROM Messages M, CurrentTS T WHERE M.timestamp > (T.current_timestamp - interval '7' day) AND M.type = '3') ORDER BY views DESC) WHERE rownum <= 5 ORDER BY views";
+        String sql = "SELECT * FROM (SELECT * FROM (SELECT * FROM Messages M, CurrentTS T WHERE M.timestamp > (T.current_timestamp - interval '7' day) AND M.type = '3') ORDER BY views DESC) WHERE rownum <= 3 ORDER BY views DESC";
         ResultSet rs = SQLHelper.ExecuteSQL(sql);
         ArrayList<String> output = new ArrayList<String>();
         ArrayList<String> timeStamp = new ArrayList<String>();
+        ArrayList<String> authors = new ArrayList<String>();
         ArrayList<String> views = new ArrayList<String>();
         try {
             while(rs.next()) {
                 output.add(rs.getString(2).trim());
                 timeStamp.add(rs.getString(3).trim());
+                authors.add(rs.getString(5).trim());
                 views.add(rs.getString(7).trim());
                 // System.out.println(rs.getString(2).trim());
                 // System.out.println("Posted On:" + rs.getString(3) + "With " + rs.getString(7) + " views.\n");
@@ -337,7 +339,7 @@ public class User {
         SQLHelper.Close();
 
         for (int i=0; i<output.size(); i++) {
-            System.out.println("'" + output.get(i) + "'");
+            System.out.println("'" + output.get(i) + "' by " + authors.get(i));
             System.out.println("Posted on: " + timeStamp.get(i) + " with " + views.get(i) + " views.\n");
         }
     }
@@ -409,9 +411,10 @@ public class User {
     }
 
     private static void numOfNewMessages() {
-        /*System.out.println("Number of new messages in the last 7 days:");
+        System.out.println("Number of new messages in the last 7 days:");
         String sql = "SELECT COUNT(*) FROM Messages M, CurrentTS T WHERE sender = owner AND M.timestamp > (T.current_timestamp - interval '7' day)";
         int num = 0;
+        ResultSet rs = SQLHelper.ExecuteSQL(sql);
         try {
             while(rs.next()) {
                 num = rs.getInt(1);
@@ -420,6 +423,6 @@ public class User {
         catch (Exception e) {
             System.out.println(e);
         }
-        System.out.println("There have been " + num + " new messages in the past 7 days.");*/
+        System.out.println("There have been " + num + " new messages in the past 7 days.");
     }
 }

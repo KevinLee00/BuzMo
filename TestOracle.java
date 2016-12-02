@@ -19,10 +19,11 @@ public class TestOracle {
                         // String sql = "SELECT * FROM (SELECT * FROM (SELECT * FROM Messages M, CurrentTS T WHERE M.timestamp > (T.current_timestamp - interval '7' day)) ORDER BY views DESC) WHERE rownum <= 3 ORDER BY views";
                         // String sql = "SELECT sender, COUNT(M.sender) as AMT FROM Messages M WHERE type <> '0' GROUP BY sender ORDER BY AMT DESC"; 
                         // String sql = "SELECT sender, AMT FROM (SELECT sender, COUNT(M.owner) as AMT FROM Messages M, CurrentTS T WHERE owner = sender AND M.timestamp > (T.current_timestamp - interval '7' day) GROUP BY M.sender ORDER BY AMT DESC) WHERE rownum <= 3 ORDER BY AMT DESC";
-                        String sql = "SELECT * FROM (SELECT * FROM (SELECT * FROM Messages M, CurrentTS T WHERE M.timestamp > (T.current_timestamp - interval '7' day) AND M.type = '3') ORDER BY views DESC) WHERE rownum <= 5 ORDER BY views";
+                        // String sql = "SELECT COUNT(*) FROM Messages M, CurrentTS T WHERE sender = owner AND M.timestamp > (T.current_timestamp - interval '7' day)";
                         // String sql = "SELECT * FROM Messages";
                         // String sql = "SELECT sender, COUNT(M.owner) as AMT FROM Messages M WHERE owner = sender GROUP BY M.sender ORDER BY AMT DESC";
                         // String sql = "UPDATE Users SET is_manager = '1' WHERE email = 'kevin2'";
+                        String sql = "DELETE FROM Users WHERE pword = 'IGGY'";
                         ResultSet rs = st.executeQuery(sql);
                         while(rs.next())
                              System.out.println(rs.getString(1)
