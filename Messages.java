@@ -47,24 +47,23 @@ public class Messages {
 	    String twords[] = Menu.PromptUser(prompt)[0].split(" "); 
 
 	    int ispublic = Menu.DisplayMenu("Should this post be public?", Menu.YesNo);
-	    
-	    String friends[] = MyCircle.GetFriends(User.getEmail());
-	    String temp[] = new String[friends.length+1];
 
-	    
-	    
-	    temp[0] = "MyCircle";
-	    for (int i = 0; i < friends.length; i++) {
-		temp[i+1] = User.NameGivenEmail(friends[i]);
-		temp[i+1] += "'s circle";
-	    }
-
-	    answer = Menu.DisplayMenu("Who's circle would you like to post a message to?", temp);
-
-	    if (answer == 1) { // self post
-		PostMessageToCircle(text[0], User.getEmail(), twords, ispublic);
+	    if (ispublic == 1) {
+		PostMessageToCircle(text[0], null, twords);
 	    } else {
-		PostMessageToCircle(text[0], friends[answer-2], twords, ispublic);
+		String friends[] = MyCircle.GetFriends(User.getEmail());
+		for (int i = 0; i < friends.length; i++) {
+		    System.out.println(i + 1 + ". " + friends[i]);
+		}
+
+		String temp[] = {"Which friends should this message be sent to?"};
+		String nums[] = Menu.PromptUser(temp)[0].split(" ");
+		String receivers[] = new String[nums.length];
+		for (int i = 0; i < nums.length; i++) {
+		    receivers[i] = friends[Integer.parseInt(nums[i])-1];
+		}
+		
+		PostMessageToCircle(text[0], receivers, twords);
 	    }
 	    
 	} else if (answer == 3) { //ChatGroup message
@@ -121,13 +120,21 @@ public class Messages {
 	String s = "DROP TABLE MessageReceivers";
 	SQLHelper.ExecuteSQL(s);
 	SQLHelper.Close();
-	s = "CREATE TABLE MessageReceivers (id INTEGER NOT NULL, email CHAR(20) REFERENCES Users(email), primary INTEGER, PRIMARY KEY(id, email))";
+	s = "CREATE TABLE MessageReceivers (id INTEGER NOT NULL, email CHAR(20) REFERENCES Users(email), PRIMARY KEY(id, email))";
 	SQLHelper.ExecuteSQL(s);
 	SQLHelper.Close();
 	*/
-	
-	String sql = "SELECT * FROM Messages M WHERE (M.type = 0 AND M.id IN (SELECT id FROM MessageReceivers MR WHERE MR.email = '" + User.getEmail() + "') AND M.owner = '" + User.getEmail() + "')";
+	/*
+	String s = "DELETE FROM Messages WHERE 1=1";
+	SQLHelper.ExecuteSQL(s);
+	SQLHelper.Close();
 
+	s = "DELETE FROM MessageReceivers WHERE 1=1";
+	SQLHelper.ExecuteSQL(s);
+	SQLHelper.Close();
+	*/
+	String sql = "SELECT * FROM Messages M WHERE (M.type = 0 AND M.id IN (SELECT id FROM MessageReceivers MR WHERE MR.email = '" + User.getEmail() + "') AND M.owner = '" + User.getEmail() + "')";
+	
 	sql += " UNION SELECT * FROM Messages M Where (M.type = 1 AND M.id IN (SELECT id FROM MessageReceivers MR WHERE MR.email = '" + User.getEmail() + "')) OR M.type = 3";
 	
 	ArrayList<MSG> messages = new ArrayList<MSG>();
@@ -151,8 +158,8 @@ public class Messages {
 	String names[] = new String[messages.size()];
 	for (int i = 0; i < messages.size(); i++) {
 	    MSG m = messages.get(i);
-
-	    sql = "SELECT email FROM MessageReceivers WHERE id = " + m.id + " AND primary = 1";
+	    /*
+	    sql = "SELECT email FROM MessageReceivers WHERE id = " + m.id;
 	    rs = SQLHelper.ExecuteSQL(sql);
 
 	    try {
@@ -163,12 +170,12 @@ public class Messages {
 
 	    SQLHelper.Close();
 
-	    
+	    */
 	    
 	    if (m.type == PRIVATE_MSG)
 		names[i] = "From: " + User.NameGivenEmail(m.sender) + " [Private]";
 	    else if (m.type == CIRCLE_MSG || m.type == CIRCLE_MSG_PUB)
-		names[i] = "From: " + User.NameGivenEmail(m.sender) + " [" + User.NameGivenEmail(m.receiver) + "'s Circle]";
+		names[i] = "From: " + User.NameGivenEmail(m.sender) + " [Circle]";
 	    
 	}
 
@@ -236,22 +243,23 @@ public class Messages {
 
 	for (int i = 0; i < messages.size(); i++) {
 	    MSG m = messages.get(i);
-	    sql = "SELECT email FROM MessageReceivers WHERE id = " + m.id + " AND primary = 1";
-
+	    
+	    sql = "SELECT email FROM MessageReceivers WHERE id = " + m.id;
+	    names[i] = "";
+	    
 	    //sql = "DELETE FROM Messages WHERE id = " + m.id;
 	    //SQLHelper.ExecuteSQL(sql);
 	    //System.exit(0);
 	    
 	    rs = SQLHelper.ExecuteSQL(sql);
 	    try {
-		if (rs.next()) {
-		    m.receiver = rs.getString(1).trim();
+		while (rs.next()) {
+		    names[i] += rs.getString(1).trim() + " ";
 		}
 	    } catch (Exception e) {System.out.println(e);}
 
 	    SQLHelper.Close();
 	    
-	    names[i] = "To: " + User.NameGivenEmail(m.receiver);
 
 	   	    
 	    if (m.type == PRIVATE_MSG)
@@ -324,7 +332,7 @@ public class Messages {
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
 
-	sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + receiver + "', " + 1 + ")";
+	sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + receiver + "')";
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
 	
@@ -333,33 +341,54 @@ public class Messages {
     }
 
     
-    public static void PostMessageToCircle(String text, String receiver, String[] twords, int ispublic) {	
+    public static void PostMessageToCircle(String text, String[] receivers, String[] twords) {	
 	/*
 	String s = "CREATE TABLE TopicWordsM (word CHAR(20) NOT NULL, id INTEGER NOT NULL, PRIMARY KEY(word, id))";
 	SQLHelper.ExecuteSQL(s);
 	SQLHelper.Close();
 	*/
+
+	
+	
 	int id = GetUniqueMessageID();
 
 	Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
-	
-	String friends[] = MyCircle.GetFriends(receiver);
 
-	int type = ispublic != 0 ? CIRCLE_MSG_PUB : CIRCLE_MSG;
+	int type = receivers == null ? CIRCLE_MSG_PUB : CIRCLE_MSG;
 	
 	String sql = "INSERT INTO Messages VALUES (" + id + ", '" + text + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', " + type + ", '0')";
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
 	
-	sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + receiver + "', " + 1 + ")";
-	SQLHelper.ExecuteSQL(sql);
-	SQLHelper.Close();
+	ResultSet rs;	
+	ArrayList<String> friends = new ArrayList<String>();
+	if (receivers == null) {
+	    sql = "SELECT email FROM Users WHERE email <> '" + User.getEmail() + "'";
+	    rs = SQLHelper.ExecuteSQL(sql);
+	    try {
+		while (rs.next()) {
+		    friends.add(rs.getString(1).trim());
+		}
+	    } catch (Exception e) {System.out.println(e);}
+
+	} else {
+	    for (int i = 0; i < receivers.length; i++) {
+		if (!friends.contains(receivers[i]))
+		    friends.add(receivers[i]);
+		String[] temp = MyCircle.GetFriends(receivers[i]);
+		for (int j = 0; j < temp.length; j++) {
+		    if (!friends.contains(temp[j]))
+			friends.add(temp[j]);
+		}
+	    }
+	}
 	
 	
-	for (int i = 0; i < friends.length; i++) {
-	    sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + friends[i] + "', " + 0 + ")";
+	for (int i = 0; i < friends.size(); i++) {
+	    sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + friends.get(i) + "')";
 	    SQLHelper.ExecuteSQL(sql);
 	    SQLHelper.Close();
+	    
 	}
 
 
@@ -367,6 +396,11 @@ public class Messages {
 	    sql = "INSERT INTO TopicWordsM VALUES ('" + twords[i] + "', " + id + ")";
 	    SQLHelper.ExecuteSQL(sql);
 	    SQLHelper.Close();
+	}
+	
+
+	for (int i = 0; i < friends.size(); i++) {
+	    System.out.println(friends.get(i));
 	}
 	
 	/*String sql = "ALTER TABLE MessageReceivers ADD primary INTEGER";
