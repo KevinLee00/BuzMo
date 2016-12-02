@@ -240,7 +240,7 @@ public class User {
     }
 
     private static void findMostActiveUsers() {
-        System.out.println("Most Active Users:\n");
+        System.out.println("Most Active Users:");
         ArrayList<String> senders = new ArrayList<String>();
         ArrayList<Integer> count = new ArrayList<Integer>();
         String sql = "SELECT sender, AMT FROM (SELECT sender, COUNT(M.owner) as AMT FROM Messages M, CurrentTS T WHERE owner = sender AND M.timestamp > (T.current_timestamp - interval '7' day) GROUP BY M.sender ORDER BY AMT DESC) WHERE rownum <= 3 ORDER BY AMT DESC";
@@ -263,7 +263,7 @@ public class User {
     }
 
     private static void findTopMessages() {
-        System.out.println("Top Messages:\n");
+        System.out.println("Top Messages:");
         String sql = "SELECT * FROM (SELECT * FROM (SELECT * FROM Messages M, CurrentTS T WHERE M.timestamp > (T.current_timestamp - interval '7' day) AND M.type = '3') ORDER BY views DESC) WHERE rownum <= 5 ORDER BY views";
         ResultSet rs = SQLHelper.ExecuteSQL(sql);
         ArrayList<String> output = new ArrayList<String>();
@@ -290,7 +290,7 @@ public class User {
     }
 
     private static void findNumOfInactiveUsers() {
-        System.out.println("Inactive Users:\n");
+        System.out.println("Inactive Users:");
         ArrayList<String> usersWithMessages = new ArrayList<String>();
         ArrayList<Integer> numberOfMessages = new ArrayList<Integer>();
         String sql = "Select sender, COUNT(Messages.sender) FROM Messages GROUP BY sender HAVING 7 > COUNT(Messages.sender)";
@@ -353,5 +353,20 @@ public class User {
         }
 
         System.out.println("There are " + numInactiveUsers + " inactive users on BuzMo.");
+    }
+
+    private static void numOfNewMessages() {
+        System.out.println("Number of new messages in the last 7 days:")
+        String sql = "SELECT COUNT(*) FROM Messages M, CurrentTS T WHERE sender = owner AND M.timestamp > (T.current_timestamp - interval '7' day)";
+        int num = 0;
+        try {
+            while(rs.next()) {
+                num = rs.getInt(1);
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        System.out.println("There have been " + num + " new messages in the past 7 days.");
     }
 }
