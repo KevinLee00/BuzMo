@@ -19,7 +19,7 @@ public class HomeScreen {
 	}
 
 	public static void UserOptions() {
-	    String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Check Mycircle", "Logout"};
+	    String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Logout"};
 
 		while (true) {
 		
@@ -45,8 +45,6 @@ public class HomeScreen {
 		    } else if (answer == 7) {
 			ChatGroups.ManageCurrentChatGroups();
 		    } else if (answer == 8) {
-			// CHECK MYCIRCLE
-		    } else if (answer == 9) {
 			System.out.println("Sucessfully logged out. Goodbye!");
 			System.exit(0);
 		    } else if (answer == 1000) { //Update Time for the sake of the presentation project
@@ -61,7 +59,7 @@ public class HomeScreen {
     }
 
     public static void ManagerOptions() {
-    	String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Check myCircle", "Get BuzMo analytics", "Appoint new manager", "Logout"};
+    	String prompts[] = {"Send message", "Check inbox", "View sent messages", "Search for user", "Create a chat group", "View messages in a chat group", "Manage existing chat groups", "Get BuzMo analytics", "Appoint new manager", "Logout"};
 
 		while (true) {
 		
@@ -83,12 +81,10 @@ public class HomeScreen {
 		    } else if (answer == 7) {
 		    ChatGroups.ManageCurrentChatGroups();
 		    } else if (answer == 8) {
-		    // CHECK MYCIRCLE
-		    } else if (answer == 9) {
 		    User.runAnalytics();
-		    } else if (answer == 10) {
+		    } else if (answer == 9) {
 		    User.setNewManager();
-			} else if (answer == 11) {
+			} else if (answer == 10) {
 			System.out.println("Sucessfully logged out. Goodbye!");
 			System.exit(0);
 		    } else if (answer == 1000) { //Update Time for the sake of the presentation project

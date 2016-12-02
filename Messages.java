@@ -5,7 +5,8 @@ public class Messages {
     public static final int PRIVATE_MSG = 0;
     public static final int CIRCLE_MSG = 1;
     public static final int CHATGRP_MSG = 2;
-
+    public static final int CIRCLE_MSG_PUB = 3;
+    
     private static class MSG {
 	public String text, id, time, sender, receiver, owner;
 	public int type;
@@ -59,9 +60,9 @@ public class Messages {
 	    answer = Menu.DisplayMenu("Who's circle would you like to post a message to?", temp);
 
 	    if (answer == 1) { // self post
-		
+		PostMessageToCircle(text[0], User.getEmail(), twords, ispublic);
 	    } else {
-		PostMessageToCircle(text[0], friends[answer-2], twords);
+		PostMessageToCircle(text[0], friends[answer-2], twords, ispublic);
 	    }
 	    
 	} else if (answer == 3) { //ChatGroup message
@@ -114,15 +115,25 @@ public class Messages {
 
 
     public static void CheckInbox() {
+	/*
+	String s = "DROP TABLE MessageReceivers";
+	SQLHelper.ExecuteSQL(s);
+	SQLHelper.Close();
+	s = "CREATE TABLE MessageReceivers (id INTEGER NOT NULL, email CHAR(20) REFERENCES Users(email), primary INTEGER, PRIMARY KEY(id, email))";
+	SQLHelper.ExecuteSQL(s);
+	SQLHelper.Close();
+	*/
+	
+	String sql = "SELECT * FROM Messages M WHERE (M.type = 0 AND M.id IN (SELECT id FROM MessageReceivers MR WHERE MR.email = '" + User.getEmail() + "') AND M.owner = '" + User.getEmail() + "')";
 
-	String sql = "SELECT * FROM Messages M WHERE (M.type = 0 AND M.id IN (SELECT id from MessageReceivers MR WHERE MR.email = '" + User.getEmail() + "') AND M.owner = '" + User.getEmail() + "')"; 
+	sql += " UNION SELECT * FROM Messages M Where (M.type = 1 AND M.id IN (SELECT id FROM MessageReceivers MR WHERE MR.email = '" + User.getEmail() + "')) OR M.type = 3";
 	
 	ArrayList<MSG> messages = new ArrayList<MSG>();
 	
 	ResultSet rs = SQLHelper.ExecuteSQL(sql);
 	try {
 	    while (rs.next()) {
-		messages.add(new MSG(rs.getString(1).trim(), rs.getString(2).trim(), rs.getString(3).trim(), rs.getString(4).trim(), User.getEmail(), rs.getString(5).trim(), rs.getInt(6)));
+		messages.add(new MSG(rs.getString(1).trim(), rs.getString(2).trim(), rs.getString(3).trim(), rs.getString(4).trim(), null, rs.getString(5).trim(), rs.getInt(6)));
 	    }
 	} catch (Exception e) {System.out.println(e);}
 
@@ -138,21 +149,30 @@ public class Messages {
 	String names[] = new String[messages.size()];
 	for (int i = 0; i < messages.size(); i++) {
 	    MSG m = messages.get(i);
-	    names[i] = User.NameGivenEmail(m.sender);
-	    
-	    names[i] = "From: " + names[i];
+
+	    sql = "SELECT email FROM MessageReceivers WHERE id = " + m.id + " AND primary = 1";
+	    rs = SQLHelper.ExecuteSQL(sql);
+
+	    try {
+		if (rs.next())
+		    m.receiver = rs.getString(1).trim();
+	    } catch (Exception e) {System.out.println(e);}
+
+
+	    SQLHelper.Close();
 	    
 	    if (m.type == PRIVATE_MSG)
-		names[i] += " [PRIVATE]";
-	    else if (m.type == CIRCLE_MSG)
-		names[i] += " [" + User.NameGivenEmail(m.receiver) + "'s Circle]";
+		names[i] = "From: " + User.NameGivenEmail(m.sender) + " [Private]";
+	    else if (m.type == CIRCLE_MSG || m.type == CIRCLE_MSG_PUB)
+		names[i] = "From: " + User.NameGivenEmail(m.sender) + " [" + User.NameGivenEmail(m.receiver) + "'s Circle]";
+	    
 	}
 
 
 	int answer = Menu.DisplayMenu("Which message would you like to read?", names);
 	MSG m = messages.get(answer-1);
 	PrintMessage(m);
-
+	
 	String message_id = m.id;
 	String owner = m.owner;
 	sql = "UPDATE Messages SET views = views+1 WHERE id = " + m.id + " AND owner = '" + m.owner + "'";
@@ -166,6 +186,19 @@ public class Messages {
 		SQLHelper.ExecuteSQL(sql);
 		SQLHelper.Close();
 
+		sql = "SELECT * FROM Messages WHERE id = " + m.id;
+		rs = SQLHelper.ExecuteSQL(sql);
+		try {
+		    if (!rs.next()) {
+			sql = "DELETE FROM MessageReceivers WHERE id = " + m.id;
+			SQLHelper.Close();
+			SQLHelper.ExecuteSQL(sql);
+		    }
+
+		} catch (Exception e) {System.out.println(e);}
+
+		SQLHelper.Close();
+		
 		System.out.println("Message deleted");
 	    }
 	}
@@ -175,16 +208,17 @@ public class Messages {
 	String sql = "SELECT * FROM Messages WHERE sender = '" + User.getEmail() + "' AND owner = '" + User.getEmail() + "'";
 	ArrayList<MSG> messages = new ArrayList<MSG>();
 	ResultSet rs = SQLHelper.ExecuteSQL(sql);
-
+	
 	try {
 	    while (rs.next()) {
+		messages.add(new MSG(rs.getString(1).trim(), rs.getString(2).trim(), rs.getString(3).trim(), User.getEmail(), null, User.getEmail(), rs.getInt(6)));
 		
 	    }
 	} catch (Exception e) {System.out.println(e);}
-
-
+	
+	
 	SQLHelper.Close();
-
+	
 	if (messages.size() == 0) {
 	    System.out.println("No sent messages");
 	    return;
@@ -194,13 +228,29 @@ public class Messages {
 
 	for (int i = 0; i < messages.size(); i++) {
 	    MSG m = messages.get(i);
-	    names[i] = User.NameGivenEmail(m.receiver);
-	   
-	    names[i] = "To: " + names[i];
+	    sql = "SELECT email FROM MessageReceivers WHERE id = " + m.id + " AND primary = 1";
 
+	    //sql = "DELETE FROM Messages WHERE id = " + m.id;
+	    //SQLHelper.ExecuteSQL(sql);
+	    //System.exit(0);
+	    
+	    rs = SQLHelper.ExecuteSQL(sql);
+	    try {
+		if (rs.next()) {
+		    m.receiver = rs.getString(1).trim();
+		}
+	    } catch (Exception e) {System.out.println(e);}
+
+	    SQLHelper.Close();
+	    
+	    names[i] = "To: " + User.NameGivenEmail(m.receiver);
+
+	   	    
 	    if (m.type == PRIVATE_MSG)
 		names[i] += " [PRIVATE]";
-	    
+	    else if (m.type == CIRCLE_MSG || m.type == CIRCLE_MSG_PUB) {
+		names[i] += " [Circle]";
+	    }
 	}
 
 	int answer = Menu.DisplayMenu("Which messages would you like to view?", names);
@@ -213,6 +263,22 @@ public class Messages {
 		sql = "DELETE FROM Messages WHERE id = " + m.id + " AND owner = '" + m.owner + "'";
 		SQLHelper.ExecuteSQL(sql);
 		SQLHelper.Close();
+
+		sql = "SELECT * FROM Messages WHERE id = " + m.id;
+		rs = SQLHelper.ExecuteSQL(sql);
+		try {
+		    if (!rs.next()) {
+			sql = "DELETE FROM MessageReceivers WHERE id = " + m.id;
+			SQLHelper.Close();
+			SQLHelper.ExecuteSQL(sql);
+		    }
+
+		} catch (Exception e) {System.out.println(e);}
+
+		SQLHelper.Close();
+
+		System.out.println("Message Deleted");
+
 	    }
 	}
 	
@@ -246,7 +312,7 @@ public class Messages {
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
 
-	sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + receiver + "')";
+	sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + receiver + "', " + 1 + ")";
 	SQLHelper.ExecuteSQL(sql);
 	SQLHelper.Close();
 	
@@ -254,18 +320,35 @@ public class Messages {
 	
     }
 
-    public static void PostMessageToMyCircle(String text, String[] receivers, int is_public) {
-	// Does this need to be implmented?	
-    }
-
-    public static void PostMessageToCircle(String text, String receiver, String[] twords) {
+    
+    public static void PostMessageToCircle(String text, String receiver, String[] twords, int ispublic) {	
+	
 	int id = GetUniqueMessageID();
 
 	Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
-
-	String friends[] = MyCircle.GetFriends(receiver);
 	
-		
+	String friends[] = MyCircle.GetFriends(receiver);
+
+	int type = ispublic != 0 ? CIRCLE_MSG_PUB : CIRCLE_MSG;
+	
+	String sql = "INSERT INTO Messages VALUES (" + id + ", '" + text + "', to_timestamp('" + time + "', 'YYYY-MM-DD HH24:MI:SS.FF'), '" + User.getEmail() + "', '" + User.getEmail() + "', " + type + ", '0')";
+	SQLHelper.ExecuteSQL(sql);
+	SQLHelper.Close();
+	
+	sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + receiver + "', " + 1 + ")";
+	SQLHelper.ExecuteSQL(sql);
+	SQLHelper.Close();
+	
+	
+	for (int i = 0; i < friends.length; i++) {
+	    sql = "INSERT INTO MessageReceivers VALUES (" + id + ", '" + friends[i] + "', " + 0 + ")";
+	    SQLHelper.ExecuteSQL(sql);
+	    SQLHelper.Close();
+	}
+	/*String sql = "ALTER TABLE MessageReceivers ADD primary INTEGER";
+	SQLHelper.ExecuteSQL(sql);
+	SQLHelper.Close();*/
+	
     }
 
     private static int GetUniqueMessageID() {
